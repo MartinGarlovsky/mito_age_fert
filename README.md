@@ -1,5 +1,5 @@
-# mito_age_fert
+# Introduction
 
-A [workflowr][] project.
+This repository contains code and analyses to accompany Dobler, XXX, Dowling, and Reinhardt. "Mito-nuclear epistasis affects female reproduction in *Drosophila melanogaster*". 
 
-[workflowr]: https://github.com/workflowr/workflowr
+Click [here](https://martingarlovsky.github.io/mito_age_fert/) to view the html report for this project (created using the [workflowr](https://github.com/jdblischak/workflowr) package).
