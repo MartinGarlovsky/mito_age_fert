@@ -1,0 +1,188 @@
+---
+title: "Body size analysis"
+author: "Martin Garlovsky"
+date: "2022-08-04"
+output: 
+  workflowr::wflow_html:
+    code_folding: hide 
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+#### Load packages
+```{r}
+library(tidyverse)
+
+library(lme4)
+library(DHARMa)
+library(emmeans)
+library(kableExtra)
+library(knitrhooks) # install with devtools::install_github("nathaneastwood/knitrhooks")
+library(showtext)
+output_max_height() # a knitrhook option
+
+options(stringsAsFactors = FALSE)
+
+# colour palettes
+met.pal <- MetBrewer::met.brewer('Johnson')
+met3 <- met.pal[c(1, 3, 5)]
+
+# set contrasts
+options(contrasts = c("contr.sum", "contr.poly"))
+
+```
+
+#### Load data
+```{r}
+bd_dat <- read.csv('data//wrangled/body_data.csv') %>% 
+  mutate(mito_snp = as.factor(mito_snp),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+```
+
+### Geography based analysis {.tabset}
+
+We collected 4 offspring of each sex from 4 females - a family (`fam`) in our analysis - and measured landmarks on the wing as a proxy for body size. We modelled body size with a linear mixed model, with scaled wing area as the response. 
+
+#### Look at the raw data 
+```{r}
+bd_dat %>% 
+  ggplot(aes(x = nuclear, y = scaled_area, fill = mito)) +
+  geom_boxplot() +
+  facet_wrap(~sex, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+```
+
+
+```{r}
+hist(bd_dat$scaled_area, breaks = 50)
+
+b1full <- lmerTest::lmer(scaled_area ~ mito * nuclear * sex + (sex|LINE) + (1|fam), 
+                         data = bd_dat, REML = TRUE)
+```
+
+#### Check model diagnostics
+```{r, fig.height=12}
+performance::check_model(b1full)
+```
+
+### Results {.tabset}
+```{r}
+anova(b1full, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(b1full)
+
+bind_rows(emmeans(b1full, pairwise ~ sex, adjust = "tukey")$contrasts %>% as_tibble(),
+          emmeans(b1full, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% as_tibble()) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Sex", 1, 1) %>%
+  kableExtra::group_rows("Nuclear", 2, 4)
+
+```
+
+#### Reaction norms
+```{r}
+body2_emm <- emmeans(b1full, ~ mito * nuclear * sex)
+
+# reaction norms
+body_norms <- emmeans(body2_emm, ~ mito * nuclear * sex, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Scaled wing area (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ sex, labeller = as_labeller(c(f = "Female", m = "Male"))) +
+  theme_bw() + 
+  theme()
+
+body_norms
+
+```
+
+#### Raw data with means
+```{r}
+body_size <- emmeans(body2_emm, ~ mito * nuclear * sex, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_jitter(data = bd_dat,
+              aes(y = scaled_area, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              size = 0.75, alpha = .1) +
+  geom_jitter(data = bd_dat %>% 
+                group_by(LINE, sex) %>% 
+                summarise(mn = mean(scaled_area)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Scaled wing area (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ sex, labeller = as_labeller(c(f = "Female", m = "Male"))) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = bd_dat %>% group_by(mito, nuclear, sex) %>% count(), aes(y = -2.2, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  NULL
+
+body_size
+
+```
+
+## Matched vs. mismatched
+```{r}
+body_matched_lmerTest <- lmerTest::lmer(scaled_area ~ sex * coevolved + (sex|LINE) + (1|fam), 
+                                        data = bd_dat, REML = TRUE)
+
+anova(body_matched_lmerTest, type = "III", ddf = "Kenward-Roger")
+#summary(body_matched_lmerTest)
+
+```
+
+
+## Mito-type analysis
+```{r}
+snp_full <- lmerTest::lmer(scaled_area ~ mito_snp * nuclear * sex + (sex|LINE) + (1|fam), 
+                           data = bd_dat,
+                           na.action = 'na.fail', REML = TRUE)
+
+anova(snp_full, type = "III", ddf = "Kenward-Roger")
+
+# snp_full_emm <- emmeans(snp_full, ~ mito_snp * nuclear * sex)
+# pairs(snp_full_emm, simple = "each")
+
+emmeans(snp_full, ~ mito_snp * nuclear * sex) %>% as_tibble() %>% drop_na() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = bd_dat,
+              aes(y = scaled_area, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Scaled wing area (EMM ± 95% CIs)') +
+  scale_colour_viridis_d(option = "H") +
+  scale_fill_viridis_d(option = "H") +
+  facet_wrap(~sex, labeller = as_labeller(c(f = "Female", m = "Male"))) +
+  theme_bw() + 
+  theme() +
+  #ggsave('figures/body_size_mitocluster.pdf', height = 3.5, width = 7.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+```
