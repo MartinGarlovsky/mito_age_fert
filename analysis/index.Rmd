@@ -10,5 +10,21 @@ editor_options:
 
 Click on the links below to see analysis steps for each experiment.
 
-### [1. Sperm competition analysis](sperm_comp.html)
+In general, we performed three sets of analysis on each dataset. For all models, we set options for contrasts to sum-to-zero and orthogonal polynomials.
 
+## Geography based analysis
+* This uses the geographic origin for each mitochondrial and nuclear genotype. 
+
+## Matched vs. mismatched analysis 
+* Next we fit a model testing whether matched (i.e., AA, BB, CC) differ from mismatched (e.g., AB, BC, CA, etc.) using the same random effects structure.
+
+## Mitotype analysis
+* Finally, we fit a model breaking down the mitochondrial genotype in to the 9 different haplotypes segregating in the populations. This led to the fixed effect model matrix being rank deficient (not every combination of mito-type × nuclear genotype was possible) with corresponding R warning messages. We inspected model diagnostic plots and outputs when fitting these models to ensure reasonable model estimates despite the unbalanced design.
+
+For all the analyses we plot reaction norms of the model estimated marginal means for each mitonuclear genotype combination. We also plot the raw data with `LINE` and mitonuclear genotype means with the raw data. 
+
+### [1. Body size analysis](body_size.html)
+
+### [2. Female fertility analysis](female_fertility.html)
+
+### [3. Male fertility analysis](male_fertility.html)
