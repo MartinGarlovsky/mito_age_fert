@@ -1,0 +1,612 @@
+---
+title: "Female fertility"
+author: "Martin Garlovsky"
+date: "2022-08-03"
+output: 
+  workflowr::wflow_html:
+    code_folding: hide 
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+#### Load packages
+```{r}
+library(tidyverse)
+
+library(lme4)
+#library(merTools)
+library(DHARMa)
+library(emmeans)
+library(kableExtra)
+library(knitrhooks) # install with devtools::install_github("nathaneastwood/knitrhooks")
+library(showtext)
+
+library(conflicted)
+
+select <- dplyr::select
+filter <- dplyr::filter
+
+output_max_height() # a knitrhook option
+
+options(stringsAsFactors = FALSE)
+
+# colour palettes
+met.pal <- MetBrewer::met.brewer('Johnson')
+met3 <- met.pal[c(1, 3, 5)]
+
+# set contrasts
+options(contrasts = c("contr.sum", "contr.poly"))
+
+```
+
+#### Load data
+```{r}
+fert_dat <- read_csv("data/wrangled/female_fertility.csv") %>% 
+  mutate(mito_snp = as.factor(mito_snp),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+```
+
+# Introduction
+First look at the data shows that fecundity appears to plateau between the first and second vial before declining. Therefore, we model fecundity across three episodes: 
+
+1. early life fecundity
+2. lifetime fecundity
+3. the rate of progeny production
+
+```{r}
+# progeny by mito / nuclear
+fert_dat %>% 
+  group_by(mito, nuclear, vial) %>% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = vial, y = mn, colour = mito)) +
+  geom_point(data = fert_dat,
+             aes(y = progeny, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_ribbon(aes(ymin = mn - s95, ymax = mn + s95, fill = mito, group = mito),
+              alpha = .5, colour = NA) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(position = position_dodge(width = .5)) +
+  geom_line(aes(group = nuclear)) + 
+  facet_wrap(~nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = 'Fecundity per vial (EMM ± 95% CIs)') +
+  theme_bw() + 
+  theme() + 
+  #ggsave('figures/vial_means.pdf', height = 3, width = 9, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+```
+**Figure 1.** Per vial progeny production for each mitonculear genotype. Facets are nuclear genotypes, with colour denoting mitochondrial genotype. 
+
+# > Early life fecundity
+We summed progeny produced from the first two vial for each female. 
+```{r}
+daydat <- fert_dat %>% filter(vial == '1' | vial == '2') %>% 
+  dplyr::select(ID:mtn, mito_snp, coevolved, LINE, vial, progeny) %>% 
+  pivot_wider(names_from = vial,
+              values_from = progeny) %>% 
+  dplyr::rename(v1 = `1`, v2 = `2`) %>% 
+  mutate(comb_vial = rowSums(across(c(v1, v2))))
+
+daydat %>% pivot_longer(cols = c(v1, v2)) %>% #filter(age == "young") %>% 
+  ggplot(aes(x = name, y = value)) + 
+  geom_line(aes(group = ID, colour = mito)) +
+  tidybayes::stat_halfeye(alpha = .5) +
+  scale_colour_manual(values = met3) +
+  labs(y = 'Female fecundity') +
+  facet_grid(mito ~ nuclear) +
+  NULL
+```
+**Figure 2.** Female fecundity in vial 1 and vial 2. Facets are for mito and nuclear genotypes. Lines connect individual females with large points representing the mean and error bars summarise the 66% and 95% quantiles.
+
+```{r}
+# combined vial 1 and vial 2
+#hist(daydat$comb_vial)
+```
+
+
+```{r}
+fecundity_early <- lmerTest::lmer(comb_vial ~ mito * nuclear + (1|LINE), data = daydat, REML = TRUE)
+```
+
+### >>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(fecundity_early)
+```
+
+
+```{r}
+anova(fecundity_early, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+emmeans(fecundity_early, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% broom::tidy() %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests for days effect. Results are averaged over the levels of mito') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+coevo_early <- lmerTest::lmer(comb_vial ~ coevolved + (1|LINE), data = daydat, REML = TRUE)
+
+anova(coevo_early, type = "III", ddf = "Kenward-Roger")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+fecundity_day1_snp <- lmerTest::lmer(comb_vial ~ mito_snp * nuclear + (1|LINE), data = daydat, REML = TRUE)
+anova(fecundity_day1_snp, type = "III", ddf = "Kenward-Roger")
+
+early_fec_snp <- emmeans(fecundity_day1_snp, ~ mito_snp * nuclear, type = 'response') %>% 
+  as_tibble() %>% drop_na() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = daydat,
+              aes(y = comb_vial, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Early life fecundity (EMM ± 95% CIs)') +
+  scale_colour_viridis_d(option = "H") +
+  scale_fill_viridis_d(option = "H") +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+early_fec_snp
+
+```
+
+
+# > Lifetime fecundity
+
+Here we sum the total number of offspring each female produced across the entire 21 days.
+```{r}
+# summarised data 
+sum_fecundity <- fert_dat %>% 
+  group_by(ID, mito, mito_snp, mtgrp, nuclear, mtn, coevolved, LINE) %>% 
+  summarise(total.fec = sum(progeny)) %>% 
+  ungroup() %>% 
+  mutate(# scale variables 
+    scaled_fec = as.numeric(scale(total.fec)),
+    # add observation level random effect
+    OLRE = 1:nrow(.))
+
+# check mtgrp not crossed within lines
+#xtabs(~ LINE + mtgrp, data = sum_fecundity)
+
+hist(sum_fecundity$total.fec, breaks = 50)
+
+# fit linear fit
+fecundity_total <- lmerTest::lmer(total.fec ~ mito * nuclear + (1|LINE), data = sum_fecundity, REML = TRUE)
+```
+
+### >>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(fecundity_total)
+```
+
+
+```{r}
+anova(fecundity_total, type = "III", ddf = "Kenward-Roger")
+
+# grand mean
+#emmeans::emmeans(fecundity_total, specs = ~1, type = "response")
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+fecundity_coevo <- lmerTest::lmer(total.fec ~ coevolved + (1|LINE), data = sum_fecundity, REML = TRUE)
+anova(fecundity_coevo, type = "III", ddf = "Kenward-Roger")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+fecundity_lmer_snp <- lmerTest::lmer(total.fec ~ mito_snp * nuclear + (1|LINE), data = sum_fecundity)
+anova(fecundity_lmer_snp, type = "III", ddf = "Kenward-Roger")
+
+lifetime_fec_snp <- emmeans(fecundity_lmer_snp, ~ mito_snp * nuclear) %>% as_tibble() %>% drop_na() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = sum_fecundity,
+              aes(y = total.fec, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .5) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Lifetime fecundity (EMM ± 95% CIs)',
+       colour = 'nuclear', fill = 'nuclear') +
+  scale_colour_viridis_d(option = "H") +
+  scale_fill_viridis_d(option = "H") +
+  theme_bw() +
+  #theme(legend.position = 'bottom') +
+  NULL
+
+lifetime_fec_snp
+
+```
+
+
+# > Rate of decline {.tabset}
+We modelled the rate of progeny production using a GLMM during the period of decline, namely from vial 2 to 6 (excluding vials 1 and 7). A quick plot of the data suggests a non-linear relationship between progeny production and vial. 
+
+```{r}
+fert_filt <- fert_dat %>% filter(vial != '1', vial <= 6)
+```
+
+## >> Linear
+```{r}
+fert_filt %>% 
+  ggplot(aes(x = vial, y = progeny, colour = mito)) +
+  geom_point(alpha = .25, position = position_dodge(width = .5)) +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 1), colour = "black") +
+  facet_wrap(~ nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+```
+
+## >> Polynomial
+```{r}
+fert_filt %>% 
+  ggplot(aes(x = vial, y = progeny, colour = mito)) +
+  geom_point(alpha = .25, position = position_dodge(width = .5)) +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), colour = "black") +
+  facet_wrap(~ nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+#
+
+## >> Fit the model
+We compared a linear fit to a polynomial fit. Based on AICc, the second order polynomial fit is preferred. 
+
+```{r}
+# fit model
+rate_glmm <- glmer(progeny ~ mito * nuclear * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                   data = fert_filt, family = 'poisson',
+                   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+# fit model
+rate_poly <- glmer(progeny ~ mito * nuclear * vial + I(vial^2) + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                   data = fert_filt, family = 'poisson',
+                   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+MuMIn::AICc(rate_glmm, rate_poly)
+
+```
+
+### >>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(rate_poly)
+performance::check_overdispersion(rate_poly) # not overdispersed
+performance::check_zeroinflation(rate_poly) # zero inflated
+
+```
+
+```{r}
+
+testDispersion(rate_poly)
+simulationOutput <- simulateResiduals(fittedModel = rate_poly, plot = FALSE)
+testZeroInflation(simulationOutput)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+
+```
+
+## >> Results
+```{r}
+car::Anova(rate_poly, type = 'III')
+#summary(rate_glmm)
+
+emt <- emtrends(rate_poly, "nuclear", var = "vial")
+#pairs(emt)
+
+rate_norms <- emtrends(rate_poly, c("mito", "nuclear"), var = "vial") %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = vial.trend, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Fecundity (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+##### >>>>> Model predicted values
+Here we generate model predicted values for a model with a simplified random effects structure. This is unused in the manuscript at present. 
+```{r}
+# reduced model for predicted values
+# # plot data and model fit
+rate_glmm_dummy <- glmer(progeny ~ mito * nuclear * vial + I(vial^2) + (1 + vial|LINE),
+                         data = fert_filt, family = 'poisson',
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+#car::Anova(rate_glmm_dummy, type = 'III')
+
+prediction_data <- expand.grid(vial = seq(from = 2, to = 6, length = 100), 
+                               #ID = unique(fert_filt$ID),
+                               #OLRE = unique(fert_filt$OLRE),
+                               LINE = levels(as.factor(fert_filt$LINE))) %>%
+  mutate(mito = str_sub(LINE, 1, 1),
+         nuclear = str_sub(LINE, 2, 2))
+
+mySumm <- function(.) {
+  predict(., newdata=prediction_data, re.form=NULL)
+}
+####Collapse bootstrap into median, 95% PI
+sumBoot <- function(merBoot) {
+  return(
+    data.frame(fit = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.5, na.rm=TRUE))),
+               lwr = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.025, na.rm=TRUE))),
+               upr = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.975, na.rm=TRUE)))
+    )
+  )
+}
+
+### Reader beware - this takes a long time to run!!!
+##lme4::bootMer() method 2
+# PI.boot2.time <- system.time(
+#   boot2 <- lme4::bootMer(rate_glmm_dummy, mySumm, nsim=1000, use.u=TRUE, type="parametric", .progress = "txt")
+# )
+##saveRDS(boot2, file = "output/female_rates_poly.Rdata")
+
+boot2 <- read_rds("output/female_rates_poly.Rdata")
+PI.boot2 <- sumBoot(boot2)
+
+plot_data <- data.frame(prediction_data, PI.boot2)
+#head(plot_data)
+colnames(plot_data)[5] <- "progeny"
+
+plot_data_summary <- plot_data %>% 
+  group_by(nuclear, vial) %>% 
+  summarise(mn_fit = mean(progeny),
+            #mn_sef = mean(se.fit),
+            mn_lwr = mean(lwr),
+            mn_upr = mean(upr)
+            ) %>% 
+  ungroup() %>% mutate(across(3:5, ~exp(.x)))
+
+# plot
+fert_mns <- fert_filt %>% 
+  group_by(nuclear, vial) %>% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96)
+
+rateP <- fert_filt %>% 
+  ggplot(aes(x = vial, y = progeny, colour = nuclear)) +
+  geom_point(aes(y = progeny, colour = nuclear, shape = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_ribbon(data = plot_data_summary,
+              aes(y = mn_fit, ymin = mn_lwr, ymax = mn_upr, fill = nuclear, group = nuclear),
+              alpha = .5, colour = NA) +
+  geom_line(data = plot_data_summary,
+            aes(y = mn_fit, colour = nuclear, group = nuclear)) +
+  geom_errorbar(data = fert_mns,
+                aes(y = mn, ymin = mn - s95, ymax = mn + s95),
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(data = fert_mns, aes(y = mn), position = position_dodge(width = .5)) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = 'Fecundity per vial (mean ± SE)') +
+  theme_bw() + 
+  theme() + 
+  #ggsave('figures/vial_means.pdf', height = 3, width = 9, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+rateP
+
+# raw data
+fem_fert_rawplot <- fert_dat %>% 
+  group_by(mito, nuclear, vial) %>% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = vial, y = mn, colour = mito)) +
+  geom_point(data = fert_dat,
+             aes(y = progeny, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(position = position_dodge(width = .5)) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = 'Fecundity per vial (mean ± SE)') +
+  facet_wrap(~ nuclear) +
+  theme_bw() + 
+  theme() + 
+  NULL
+#ggsave(filename = 'figures/fem_fert_rawplot.pdf', height = 4, width = 9, dpi = 600, useDingbats = FALSE)
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+
+rate_coevo <- glmer(progeny ~ coevolved * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                         data = fert_filt, family = 'poisson',
+                         control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+car::Anova(rate_coevo, type = 'III')
+
+```
+
+### >>> Mito-type analysis
+```{r}
+# fit model
+rate_glmm_snp <- glmer(progeny ~ mito_snp * nuclear * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                       data = fert_filt, family = 'poisson', 
+                       control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=50000)))
+
+car::Anova(rate_glmm_snp, type = 'III')
+#summary(rate_glmm_snp)
+
+```
+
+# > Combined plot for all stages
+```{r}
+comb_all_female <- bind_rows(
+  emmeans(fecundity_early, ~ mito * nuclear) %>% as_tibble() %>% mutate(stage = "a) Early life"),
+  emmeans(fecundity_total, ~ mito * nuclear) %>% as_tibble() %>% mutate(stage = "b) Lifetime"),
+  emtrends(rate_glmm, c("mito", "nuclear"), var = "vial") %>% as_tibble() %>% 
+    mutate(stage = "c) Rate of decline",
+           emmean = vial.trend)) %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Fecundity (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~stage, scales = "free_y") +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+comb_all_female
+#ggsave(filename = 'figures/femaleplot_norms3.pdf', height = 4, width = 12, dpi = 600, useDingbats = FALSE)
+
+```
+
+
+# > Survival analysis
+
+Finally, we modelled reproductive senescence using survival analysis based on the onset of infertility, i.e., the time (in vials) to event (final vial producing progeny for each female) as the response. 
+
+```{r}
+library(coxme)
+library(survminer)
+
+fsurv <- fert_dat %>% 
+  mutate(bin_prog = if_else(progeny == 0, 0, 1),
+         mito_snp = as.factor(mito_snp))
+
+fsurv$cum_pr <- ave(fsurv$progeny, fsurv$ID, FUN = cumsum)
+fsurv <- fsurv %>% group_by(ID) %>% slice(which.min(progeny)) %>% mutate(EVENT = 1)
+
+fit1 <- survfit(Surv(vial, EVENT) ~ mito + nuclear, data = fsurv)
+#summary(fit1)
+#anova(fit1)
+
+survplot <- ggsurvplot(fit1, colour = "mito",
+                       palette = rep(rev(met3), 3))
+
+survplot$plot + 
+  facet_wrap(~nuclear) + 
+  theme_bw() + 
+  theme(legend.position = "") +
+  NULL
+
+```
+
+### >>> Check diagnostics
+Using a simplified model without the random effects we can check the proportional hazards assumption.
+```{r}
+plot(survfit(Surv(vial, EVENT) ~ mito + nuclear, data = fsurv), 
+     lty = 1:4, 
+     fun="cloglog", main = "cloglog")
+
+test.ph <- cox.zph(coxph(Surv(vial, EVENT) ~ mito * nuclear, data = fsurv))
+
+ggcoxzph(test.ph)
+
+```
+
+We then use likelihood ratio tests comparing the full model to submodels excluding the effect of interest. 
+```{r}
+cox.des <- coxme(Surv(vial, EVENT) ~ mito * nuclear + (1|LINE), data = fsurv)
+
+cox.des.n1 <- coxme(Surv(vial, EVENT) ~ 1 + nuclear + (1|LINE), data = fsurv)
+cox.des.n2 <- coxme(Surv(vial, EVENT) ~ mito + 1 + (1|LINE), data = fsurv)
+cox.des.n3 <- coxme(Surv(vial, EVENT) ~ mito + nuclear + (1|LINE), data = fsurv)
+
+# posthoc tests
+bind_rows(anova(cox.des, cox.des.n1) %>% broom::tidy(),
+          anova(cox.des, cox.des.n2) %>% broom::tidy(),
+          anova(cox.des, cox.des.n3) %>% broom::tidy()) %>% #drop_na() %>% 
+  kable(digits = 3, 
+        caption = 'Likelihood ratio tests comparing the full model to submodels excluding the main effect of interest') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Mitochondria", 1, 2) %>%
+  kableExtra::group_rows("Nuclear", 3, 4) %>%
+  kableExtra::group_rows("Mitonuclear interaction", 5, 6)
+
+
+cox_emm <- emmeans(cox.des, ~ mito * nuclear)
+
+# posthoc tests
+emmeans(cox_emm, pairwise ~ nuclear, adjust = "tukey")
+#emmeans(cox_emm, pairwise ~ nuclear, adjust = "tukey", type = "response")
+
+# posthoc tests
+bind_rows(emmeans(cox_emm, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% broom::tidy(),
+          emmeans(cox_emm, pairwise ~ nuclear, adjust = "tukey", type = "response")$contrasts %>% broom::tidy()) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ. Results are averaged over the levels of mito') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("log scale", 1, 3) %>%
+  kableExtra::group_rows("Hazard ratios", 4, 6)
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+cox.coevo <- coxme(Surv(vial, EVENT) ~ coevolved + (1|LINE), data = fsurv)
+
+#anova(cox.coevo)
+summary(cox.coevo)
+
+cox.coevo.n1 <- coxme(Surv(vial, EVENT) ~ 1 + (1|LINE), data = fsurv)
+
+anova(cox.coevo, cox.coevo.n1) # mito NS
+
+```
+
+### >>> Mito-type analysis
+The mito-type analysis throws an error due to the rank deficiency of the design. 
+```{r}
+
+# cox.snp <- coxme(Surv(vial, EVENT) ~ mito_snp * nuclear + (1|LINE), data = fsurv)
+# 
+# summary(cox.snp)
+# 
+# cox.snp.n1 <- coxme(Surv(vial, EVENT) ~ 1 + nuclear + (1|LINE), data = fsurv)
+# cox.snp.n2 <- coxme(Surv(vial, EVENT) ~ mito_snp + 1 + (1|LINE), data = fsurv)
+# cox.snp.n3 <- coxme(Surv(vial, EVENT) ~ mito_snp + nuclear + (1|LINE), data = fsurv)
+# 
+# anova(cox.snp, cox.snp.n1) # mito NS
+# anova(cox.snp, cox.snp.n2) # nuclear sig
+# anova(cox.snp, cox.snp.n3) # interaction NS
+
+```
