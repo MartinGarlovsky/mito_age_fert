@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Martin Garlovsky" />
+
+<meta name="date" content="2022-08-03" />
+
+<title>Female fertility</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">mito_age_fert</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/MartinGarlovsky/mito_age_fert">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Female fertility</h1>
+<h4 class="author">Martin Garlovsky</h4>
+<h4 class="date">2022-08-03</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-10-09
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>mito_age_fert/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20230213code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20230213)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20230213code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20230213)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree2eea37b56531ee44c881460bd64a607ea79136dbtargetblank2eea37ba">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/2eea37b56531ee44c881460bd64a607ea79136db" target="_blank">2eea37b</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree2eea37b56531ee44c881460bd64a607ea79136dbtargetblank2eea37ba"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/2eea37b56531ee44c881460bd64a607ea79136db" target="_blank">2eea37b</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  README.html
+    Untracked:  analysis/SNP_clusters.Rmd
+    Untracked:  analysis/male_fertility.Rmd
+    Untracked:  check_lines.R
+    Untracked:  code/data_wrangling.R
+    Untracked:  code/plotting_Script.R
+    Untracked:  data/Data_raw_emmely.csv
+    Untracked:  data/defence.csv
+    Untracked:  data/male_fertility.csv
+    Untracked:  data/mito_34sigdiffSNPs_consensus_incl_colnames.csv
+    Untracked:  data/mito_mt_copy_number.xlsx
+    Untracked:  data/mito_mt_seq_major_alleles_sig_snptable.csv
+    Untracked:  data/mito_mt_seq_sig_annotated.csv
+    Untracked:  data/mito_mt_seq_sig_annotated.vcf
+    Untracked:  data/offence.csv
+    Untracked:  data/rawdata_PCA.csv
+    Untracked:  data/snp-gene.txt
+    Untracked:  data/sperm_metabolic_rate.csv
+    Untracked:  data/sperm_viability.csv
+    Untracked:  data/wrangled/
+    Untracked:  figures/
+    Untracked:  output/SNP_clusters.csv
+    Untracked:  output/bod_brm.rds
+    Untracked:  output/female_rate_dredge.rds
+    Untracked:  output/female_rates_bb.Rdata
+    Untracked:  output/female_rates_boot.Rdata
+    Untracked:  output/female_rates_poly.Rdata
+    Untracked:  output/male_fec_dredge.rds
+    Untracked:  output/male_hatch_dredge.rds
+    Untracked:  output/male_hatch_dredge_reduced.rds
+    Untracked:  output/sperm_met_dredge.rds
+    Untracked:  output/viab_ctrl_dredge.rds
+    Untracked:  output/viab_trt_dredge.rds
+    Untracked:  snp_matrix_dobler.csv
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/sperm_comp.Rmd
+    Modified:   data/README.md
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/female_fertility.Rmd</code>) and
+HTML (<code>docs/female_fertility.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/2eea37b56531ee44c881460bd64a607ea79136db/analysis/female_fertility.Rmd" target="_blank">2eea37b</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+<td>
+wflow_publish("analysis/female_fertility.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-packages" class="section level4">
+<h4>Load packages</h4>
+<pre class="r"><code>library(tidyverse)
+
+library(lme4)
+#library(merTools)
+library(DHARMa)
+library(emmeans)
+library(kableExtra)
+library(knitrhooks) # install with devtools::install_github(&quot;nathaneastwood/knitrhooks&quot;)
+library(showtext)
+
+library(conflicted)
+
+select &lt;- dplyr::select
+filter &lt;- dplyr::filter
+
+output_max_height() # a knitrhook option
+
+options(stringsAsFactors = FALSE)
+
+# colour palettes
+met.pal &lt;- MetBrewer::met.brewer(&#39;Johnson&#39;)
+met3 &lt;- met.pal[c(1, 3, 5)]
+
+# set contrasts
+options(contrasts = c(&quot;contr.sum&quot;, &quot;contr.poly&quot;))</code></pre>
+</div>
+<div id="load-data" class="section level4">
+<h4>Load data</h4>
+<pre class="r"><code>fert_dat &lt;- read_csv(&quot;data/wrangled/female_fertility.csv&quot;) %&gt;% 
+  mutate(mito_snp = as.factor(mito_snp),
+         coevolved = if_else(mito == nuclear, &quot;matched&quot;, &quot;mismatched&quot;))</code></pre>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>First look at the data shows that fecundity appears to plateau
+between the first and second vial before declining. Therefore, we model
+fecundity across three episodes:</p>
+<ol style="list-style-type: decimal">
+<li>early life fecundity</li>
+<li>lifetime fecundity</li>
+<li>the rate of progeny production</li>
+</ol>
+<pre class="r"><code># progeny by mito / nuclear
+fert_dat %&gt;% 
+  group_by(mito, nuclear, vial) %&gt;% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96) %&gt;% 
+  ggplot(aes(x = vial, y = mn, colour = mito)) +
+  geom_point(data = fert_dat,
+             aes(y = progeny, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_ribbon(aes(ymin = mn - s95, ymax = mn + s95, fill = mito, group = mito),
+              alpha = .5, colour = NA) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(position = position_dodge(width = .5)) +
+  geom_line(aes(group = nuclear)) + 
+  facet_wrap(~nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = &#39;Fecundity per vial (EMM ± 95% CIs)&#39;) +
+  theme_bw() + 
+  theme() + 
+  #ggsave(&#39;figures/vial_means.pdf&#39;, height = 3, width = 9, dpi = 600, useDingbats = FALSE) +
+  NULL</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" />
+<strong>Figure 1.</strong> Per vial progeny production for each
+mitonculear genotype. Facets are nuclear genotypes, with colour denoting
+mitochondrial genotype.</p>
+</div>
+<div id="early-life-fecundity" class="section level1">
+<h1>&gt; Early life fecundity</h1>
+<p>We summed progeny produced from the first two vial for each
+female.</p>
+<pre class="r"><code>daydat &lt;- fert_dat %&gt;% filter(vial == &#39;1&#39; | vial == &#39;2&#39;) %&gt;% 
+  dplyr::select(ID:mtn, mito_snp, coevolved, LINE, vial, progeny) %&gt;% 
+  pivot_wider(names_from = vial,
+              values_from = progeny) %&gt;% 
+  dplyr::rename(v1 = `1`, v2 = `2`) %&gt;% 
+  mutate(comb_vial = rowSums(across(c(v1, v2))))
+
+daydat %&gt;% pivot_longer(cols = c(v1, v2)) %&gt;% #filter(age == &quot;young&quot;) %&gt;% 
+  ggplot(aes(x = name, y = value)) + 
+  geom_line(aes(group = ID, colour = mito)) +
+  tidybayes::stat_halfeye(alpha = .5) +
+  scale_colour_manual(values = met3) +
+  labs(y = &#39;Female fecundity&#39;) +
+  facet_grid(mito ~ nuclear) +
+  NULL</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" />
+<strong>Figure 2.</strong> Female fecundity in vial 1 and vial 2. Facets
+are for mito and nuclear genotypes. Lines connect individual females
+with large points representing the mean and error bars summarise the 66%
+and 95% quantiles.</p>
+<pre class="r"><code># combined vial 1 and vial 2
+#hist(daydat$comb_vial)</code></pre>
+<pre class="r"><code>fecundity_early &lt;- lmerTest::lmer(comb_vial ~ mito * nuclear + (1|LINE), data = daydat, REML = TRUE)</code></pre>
+<div id="check-diagnostics" class="section level3">
+<h3>&gt;&gt;&gt; Check diagnostics</h3>
+<pre class="r"><code>performance::check_model(fecundity_early)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anova(fecundity_early, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% broom::tidy() %&gt;% 
+  as_tibble() %&gt;% 
+  kable(digits = 3, 
+        caption = &#39;Type III Analysis of Variance Table with Kenward-Roger`s method&#39;) %&gt;% 
+  kable_styling(full_width = FALSE)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Type III Analysis of Variance Table with Kenward-Roger`s method
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+sumsq
+</th>
+<th style="text-align:right;">
+meansq
+</th>
+<th style="text-align:right;">
+NumDF
+</th>
+<th style="text-align:right;">
+DenDF
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+mito
+</td>
+<td style="text-align:right;">
+1548.543
+</td>
+<td style="text-align:right;">
+774.272
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+17.787
+</td>
+<td style="text-align:right;">
+0.714
+</td>
+<td style="text-align:right;">
+0.503
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:right;">
+39590.215
+</td>
+<td style="text-align:right;">
+19795.107
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+17.765
+</td>
+<td style="text-align:right;">
+18.266
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:nuclear
+</td>
+<td style="text-align:right;">
+3322.807
+</td>
+<td style="text-align:right;">
+830.702
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+17.750
+</td>
+<td style="text-align:right;">
+0.767
+</td>
+<td style="text-align:right;">
+0.561
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>emmeans(fecundity_early, pairwise ~ nuclear, adjust = &quot;tukey&quot;)$contrasts %&gt;% broom::tidy() %&gt;% 
+  kable(digits = 3, 
+        caption = &#39;Posthoc Tukey tests for days effect. Results are averaged over the levels of mito&#39;) %&gt;% 
+  kable_styling(full_width = FALSE)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Posthoc Tukey tests for days effect. Results are averaged over the
+levels of mito
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+contrast
+</th>
+<th style="text-align:right;">
+null.value
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+adj.p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:left;">
+A - B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30.404
+</td>
+<td style="text-align:right;">
+6.216
+</td>
+<td style="text-align:right;">
+17.556
+</td>
+<td style="text-align:right;">
+4.891
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:left;">
+A - C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+35.172
+</td>
+<td style="text-align:right;">
+6.341
+</td>
+<td style="text-align:right;">
+18.553
+</td>
+<td style="text-align:right;">
+5.547
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:left;">
+B - C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4.768
+</td>
+<td style="text-align:right;">
+6.222
+</td>
+<td style="text-align:right;">
+17.269
+</td>
+<td style="text-align:right;">
+0.766
+</td>
+<td style="text-align:right;">
+0.728
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="matched-vs.-mismatched" class="section level3">
+<h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
+<pre class="r"><code>coevo_early &lt;- lmerTest::lmer(comb_vial ~ coevolved + (1|LINE), data = daydat, REML = TRUE)
+
+anova(coevo_early, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
+<pre>Type III Analysis of Variance Table with Kenward-Roger's method
+          Sum Sq Mean Sq NumDF  DenDF F value Pr(>F)
+coevolved  509.6   509.6     1 25.442  0.4702 0.4991
+</pre>
+</div>
+<div id="mito-type-analysis" class="section level3">
+<h3>&gt;&gt;&gt; Mito-type analysis</h3>
+<pre class="r"><code>fecundity_day1_snp &lt;- lmerTest::lmer(comb_vial ~ mito_snp * nuclear + (1|LINE), data = daydat, REML = TRUE)
+anova(fecundity_day1_snp, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
+<pre>Type III Analysis of Variance Table with Kenward-Roger's method
+                  Sum Sq Mean Sq NumDF  DenDF F value  Pr(>F)  
+mito_snp          4327.1   540.9     8 8.6615  0.4991 0.82890  
+nuclear          15644.0  7822.0     2 9.2612  7.2131 0.01292 *
+mito_snp:nuclear 10169.7  1452.8     7 8.9663  1.3398 0.33402  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+</pre>
+<pre class="r"><code>early_fec_snp &lt;- emmeans(fecundity_day1_snp, ~ mito_snp * nuclear, type = &#39;response&#39;) %&gt;% 
+  as_tibble() %&gt;% drop_na() %&gt;% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = daydat,
+              aes(y = comb_vial, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = &#39;Early life fecundity (EMM ± 95% CIs)&#39;) +
+  scale_colour_viridis_d(option = &quot;H&quot;) +
+  scale_fill_viridis_d(option = &quot;H&quot;) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+early_fec_snp</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="lifetime-fecundity" class="section level1">
+<h1>&gt; Lifetime fecundity</h1>
+<p>Here we sum the total number of offspring each female produced across
+the entire 21 days.</p>
+<pre class="r"><code># summarised data 
+sum_fecundity &lt;- fert_dat %&gt;% 
+  group_by(ID, mito, mito_snp, mtgrp, nuclear, mtn, coevolved, LINE) %&gt;% 
+  summarise(total.fec = sum(progeny)) %&gt;% 
+  ungroup() %&gt;% 
+  mutate(# scale variables 
+    scaled_fec = as.numeric(scale(total.fec)),
+    # add observation level random effect
+    OLRE = 1:nrow(.))
+
+# check mtgrp not crossed within lines
+#xtabs(~ LINE + mtgrp, data = sum_fecundity)
+
+hist(sum_fecundity$total.fec, breaks = 50)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># fit linear fit
+fecundity_total &lt;- lmerTest::lmer(total.fec ~ mito * nuclear + (1|LINE), data = sum_fecundity, REML = TRUE)</code></pre>
+<div id="check-diagnostics-1" class="section level3">
+<h3>&gt;&gt;&gt; Check diagnostics</h3>
+<pre class="r"><code>performance::check_model(fecundity_total)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anova(fecundity_total, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
+<pre>Type III Analysis of Variance Table with Kenward-Roger's method
+              Sum Sq Mean Sq NumDF  DenDF F value Pr(>F)
+mito          2951.2  1475.6     2 17.582  0.4769 0.6285
+nuclear       7986.8  3993.4     2 17.533  1.2906 0.3000
+mito:nuclear 16005.0  4001.2     4 17.511  1.2931 0.3108
+</pre>
+<pre class="r"><code># grand mean
+#emmeans::emmeans(fecundity_total, specs = ~1, type = &quot;response&quot;)</code></pre>
+</div>
+<div id="matched-vs.-mismatched-1" class="section level3">
+<h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
+<pre class="r"><code>fecundity_coevo &lt;- lmerTest::lmer(total.fec ~ coevolved + (1|LINE), data = sum_fecundity, REML = TRUE)
+anova(fecundity_coevo, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
+<pre>Type III Analysis of Variance Table with Kenward-Roger's method
+          Sum Sq Mean Sq NumDF  DenDF F value Pr(>F)
+coevolved 2391.7  2391.7     1 25.446  0.7729 0.3875
+</pre>
+</div>
+<div id="mito-type-analysis-1" class="section level3">
+<h3>&gt;&gt;&gt; Mito-type analysis</h3>
+<pre class="r"><code>fecundity_lmer_snp &lt;- lmerTest::lmer(total.fec ~ mito_snp * nuclear + (1|LINE), data = sum_fecundity)
+anova(fecundity_lmer_snp, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
+<pre>Type III Analysis of Variance Table with Kenward-Roger's method
+                 Sum Sq Mean Sq NumDF  DenDF F value Pr(>F)
+mito_snp          19929  2491.2     8 8.1317  0.8067 0.6154
+nuclear              41    20.4     2 9.5863  0.0066 0.9934
+mito_snp:nuclear  47266  6752.3     7 8.6974  2.1827 0.1399
+</pre>
+<pre class="r"><code>lifetime_fec_snp &lt;- emmeans(fecundity_lmer_snp, ~ mito_snp * nuclear) %&gt;% as_tibble() %&gt;% drop_na() %&gt;% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = sum_fecundity,
+              aes(y = total.fec, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .5) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = &#39;Lifetime fecundity (EMM ± 95% CIs)&#39;,
+       colour = &#39;nuclear&#39;, fill = &#39;nuclear&#39;) +
+  scale_colour_viridis_d(option = &quot;H&quot;) +
+  scale_fill_viridis_d(option = &quot;H&quot;) +
+  theme_bw() +
+  #theme(legend.position = &#39;bottom&#39;) +
+  NULL
+
+lifetime_fec_snp</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="rate-of-decline" class="section level1 tabset">
+<h1 class="tabset">&gt; Rate of decline</h1>
+<p>We modelled the rate of progeny production using a GLMM during the
+period of decline, namely from vial 2 to 6 (excluding vials 1 and 7). A
+quick plot of the data suggests a non-linear relationship between
+progeny production and vial.</p>
+<pre class="r"><code>fert_filt &lt;- fert_dat %&gt;% filter(vial != &#39;1&#39;, vial &lt;= 6)</code></pre>
+<div id="linear" class="section level2">
+<h2>&gt;&gt; Linear</h2>
+<pre class="r"><code>fert_filt %&gt;% 
+  ggplot(aes(x = vial, y = progeny, colour = mito)) +
+  geom_point(alpha = .25, position = position_dodge(width = .5)) +
+  stat_smooth(method = &quot;lm&quot;, formula = y ~ poly(x, 1), colour = &quot;black&quot;) +
+  facet_wrap(~ nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="polynomial" class="section level2">
+<h2>&gt;&gt; Polynomial</h2>
+<pre class="r"><code>fert_filt %&gt;% 
+  ggplot(aes(x = vial, y = progeny, colour = mito)) +
+  geom_point(alpha = .25, position = position_dodge(width = .5)) +
+  stat_smooth(method = &quot;lm&quot;, formula = y ~ poly(x, 2), colour = &quot;black&quot;) +
+  facet_wrap(~ nuclear) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="section" class="section level1">
+<h1></h1>
+<div id="fit-the-model" class="section level2">
+<h2>&gt;&gt; Fit the model</h2>
+<p>We compared a linear fit to a polynomial fit. Based on AICc, the
+second order polynomial fit is preferred.</p>
+<pre class="r"><code># fit model
+rate_glmm &lt;- glmer(progeny ~ mito * nuclear * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                   data = fert_filt, family = &#39;poisson&#39;,
+                   control = glmerControl(optimizer = &quot;bobyqa&quot;, optCtrl = list(maxfun = 50000)))
+
+# fit model
+rate_poly &lt;- glmer(progeny ~ mito * nuclear * vial + I(vial^2) + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                   data = fert_filt, family = &#39;poisson&#39;,
+                   control = glmerControl(optimizer = &quot;bobyqa&quot;, optCtrl = list(maxfun = 50000)))
+
+MuMIn::AICc(rate_glmm, rate_poly)</code></pre>
+<pre>          df     AICc
+rate_glmm 21 9824.599
+rate_poly 22 9809.792
+</pre>
+<div id="check-diagnostics-2" class="section level3">
+<h3>&gt;&gt;&gt; Check diagnostics</h3>
+<pre class="r"><code>performance::check_model(rate_poly)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>performance::check_overdispersion(rate_poly) # not overdispersed</code></pre>
+<pre># Overdispersion test
+
+       dispersion ratio =   0.334
+  Pearson's Chi-Squared = 557.699
+                p-value =       1
+</pre>
+<pre class="r"><code>performance::check_zeroinflation(rate_poly) # zero inflated</code></pre>
+<pre># Check for zero-inflation
+
+   Observed zeros: 788
+  Predicted zeros: 669
+            Ratio: 0.85
+</pre>
+<pre class="r"><code>testDispersion(rate_poly)</code></pre>
+<img src="figure/female_fertility.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" />
+<pre>
+    DHARMa nonparametric dispersion test via sd of residuals fitted vs.
+    simulated
+
+data:  simulationOutput
+dispersion = 0.00862, p-value < 2.2e-16
+alternative hypothesis: two.sided
+</pre>
+<pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = rate_poly, plot = FALSE)
+testZeroInflation(simulationOutput)</code></pre>
+<img src="figure/female_fertility.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" />
+<pre>
+    DHARMa zero-inflation test via comparison to expected zeros with
+    simulation under H0 = fitted model
+
+data:  simulationOutput
+ratioObsSim = 1.2374, p-value < 2.2e-16
+alternative hypothesis: two.sided
+</pre>
+<pre class="r"><code>hist(residuals(simulationOutput))</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-21-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-21-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(simulationOutput)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-21-5.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="results" class="section level2">
+<h2>&gt;&gt; Results</h2>
+<pre class="r"><code>car::Anova(rate_poly, type = &#39;III&#39;)</code></pre>
+<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
+
+Response: progeny
+                     Chisq Df Pr(>Chisq)    
+(Intercept)       221.0932  1  < 2.2e-16 ***
+mito                2.1116  2    0.34791    
+nuclear            35.7304  2  1.743e-08 ***
+vial                9.0479  1    0.00263 ** 
+I(vial^2)          19.6275  1  9.411e-06 ***
+mito:nuclear        2.6912  4    0.61076    
+mito:vial           4.3477  2    0.11374    
+nuclear:vial       84.1731  2  < 2.2e-16 ***
+mito:nuclear:vial   3.2873  4    0.51095    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+</pre>
+<pre class="r"><code>#summary(rate_glmm)
+
+emt &lt;- emtrends(rate_poly, &quot;nuclear&quot;, var = &quot;vial&quot;)
+#pairs(emt)
+
+rate_norms &lt;- emtrends(rate_poly, c(&quot;mito&quot;, &quot;nuclear&quot;), var = &quot;vial&quot;) %&gt;% as_tibble() %&gt;% 
+  ggplot(aes(x = nuclear, y = vial.trend, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = &#39;Fecundity (EMM)&#39;) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL</code></pre>
+<div id="model-predicted-values" class="section level5">
+<h5>&gt;&gt;&gt;&gt;&gt; Model predicted values</h5>
+<p>Here we generate model predicted values for a model with a simplified
+random effects structure. This is unused in the manuscript at
+present.</p>
+<pre class="r"><code># reduced model for predicted values
+# # plot data and model fit
+rate_glmm_dummy &lt;- glmer(progeny ~ mito * nuclear * vial + I(vial^2) + (1 + vial|LINE),
+                         data = fert_filt, family = &#39;poisson&#39;,
+                         control = glmerControl(optimizer = &quot;bobyqa&quot;, optCtrl = list(maxfun = 50000)))
+
+#car::Anova(rate_glmm_dummy, type = &#39;III&#39;)
+
+prediction_data &lt;- expand.grid(vial = seq(from = 2, to = 6, length = 100), 
+                               #ID = unique(fert_filt$ID),
+                               #OLRE = unique(fert_filt$OLRE),
+                               LINE = levels(as.factor(fert_filt$LINE))) %&gt;%
+  mutate(mito = str_sub(LINE, 1, 1),
+         nuclear = str_sub(LINE, 2, 2))
+
+mySumm &lt;- function(.) {
+  predict(., newdata=prediction_data, re.form=NULL)
+}
+####Collapse bootstrap into median, 95% PI
+sumBoot &lt;- function(merBoot) {
+  return(
+    data.frame(fit = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.5, na.rm=TRUE))),
+               lwr = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.025, na.rm=TRUE))),
+               upr = apply(merBoot$t, 2, function(x) as.numeric(quantile(x, probs=.975, na.rm=TRUE)))
+    )
+  )
+}
+
+### Reader beware - this takes a long time to run!!!
+##lme4::bootMer() method 2
+# PI.boot2.time &lt;- system.time(
+#   boot2 &lt;- lme4::bootMer(rate_glmm_dummy, mySumm, nsim=1000, use.u=TRUE, type=&quot;parametric&quot;, .progress = &quot;txt&quot;)
+# )
+##saveRDS(boot2, file = &quot;output/female_rates_poly.Rdata&quot;)
+
+boot2 &lt;- read_rds(&quot;output/female_rates_poly.Rdata&quot;)
+PI.boot2 &lt;- sumBoot(boot2)
+
+plot_data &lt;- data.frame(prediction_data, PI.boot2)
+#head(plot_data)
+colnames(plot_data)[5] &lt;- &quot;progeny&quot;
+
+plot_data_summary &lt;- plot_data %&gt;% 
+  group_by(nuclear, vial) %&gt;% 
+  summarise(mn_fit = mean(progeny),
+            #mn_sef = mean(se.fit),
+            mn_lwr = mean(lwr),
+            mn_upr = mean(upr)
+            ) %&gt;% 
+  ungroup() %&gt;% mutate(across(3:5, ~exp(.x)))
+
+# plot
+fert_mns &lt;- fert_filt %&gt;% 
+  group_by(nuclear, vial) %&gt;% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96)
+
+rateP &lt;- fert_filt %&gt;% 
+  ggplot(aes(x = vial, y = progeny, colour = nuclear)) +
+  geom_point(aes(y = progeny, colour = nuclear, shape = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_ribbon(data = plot_data_summary,
+              aes(y = mn_fit, ymin = mn_lwr, ymax = mn_upr, fill = nuclear, group = nuclear),
+              alpha = .5, colour = NA) +
+  geom_line(data = plot_data_summary,
+            aes(y = mn_fit, colour = nuclear, group = nuclear)) +
+  geom_errorbar(data = fert_mns,
+                aes(y = mn, ymin = mn - s95, ymax = mn + s95),
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(data = fert_mns, aes(y = mn), position = position_dodge(width = .5)) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = &#39;Fecundity per vial (mean ± SE)&#39;) +
+  theme_bw() + 
+  theme() + 
+  #ggsave(&#39;figures/vial_means.pdf&#39;, height = 3, width = 9, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+rateP</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># raw data
+fem_fert_rawplot &lt;- fert_dat %&gt;% 
+  group_by(mito, nuclear, vial) %&gt;% 
+  summarise(mn = mean(progeny),
+            se = sd(progeny)/sqrt(n()),
+            s95 = se * 1.96) %&gt;% 
+  ggplot(aes(x = vial, y = mn, colour = mito)) +
+  geom_point(data = fert_dat,
+             aes(y = progeny, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(position = position_dodge(width = .5)) +
+  scale_x_continuous(breaks = c(1:7)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  labs(y = &#39;Fecundity per vial (mean ± SE)&#39;) +
+  facet_wrap(~ nuclear) +
+  theme_bw() + 
+  theme() + 
+  NULL
+#ggsave(filename = &#39;figures/fem_fert_rawplot.pdf&#39;, height = 4, width = 9, dpi = 600, useDingbats = FALSE)</code></pre>
+</div>
+<div id="matched-vs.-mismatched-2" class="section level3">
+<h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
+<pre class="r"><code>rate_coevo &lt;- glmer(progeny ~ coevolved * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                         data = fert_filt, family = &#39;poisson&#39;,
+                         control = glmerControl(optimizer = &quot;bobyqa&quot;, optCtrl = list(maxfun = 50000)))
+
+car::Anova(rate_coevo, type = &#39;III&#39;)</code></pre>
+<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
+
+Response: progeny
+                   Chisq Df Pr(>Chisq)    
+(Intercept)    1135.0369  1     <2e-16 ***
+coevolved         0.0319  1     0.8581    
+vial            885.9213  1     <2e-16 ***
+coevolved:vial    0.0069  1     0.9338    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+</pre>
+</div>
+<div id="mito-type-analysis-2" class="section level3">
+<h3>&gt;&gt;&gt; Mito-type analysis</h3>
+<pre class="r"><code># fit model
+rate_glmm_snp &lt;- glmer(progeny ~ mito_snp * nuclear * vial + (1|LINE:vial) + (1|ID) + (1|OLRE),
+                       data = fert_filt, family = &#39;poisson&#39;, 
+                       control= glmerControl(optimizer=&quot;bobyqa&quot;, optCtrl=list(maxfun=50000)))
+
+car::Anova(rate_glmm_snp, type = &#39;III&#39;)</code></pre>
+<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
+
+Response: progeny
+                         Chisq Df Pr(>Chisq)    
+(Intercept)           157.6550  1    < 2e-16 ***
+mito_snp                6.5879  8    0.58168    
+nuclear                 0.2651  2    0.87588    
+vial                  117.0384  1    < 2e-16 ***
+mito_snp:nuclear        5.1144  7    0.64600    
+mito_snp:vial          13.9589  8    0.08284 .  
+nuclear:vial            2.6662  2    0.26366    
+mito_snp:nuclear:vial   9.3443  7    0.22887    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+</pre>
+<pre class="r"><code>#summary(rate_glmm_snp)</code></pre>
+</div>
+</div>
+</div>
+<div id="combined-plot-for-all-stages" class="section level1">
+<h1>&gt; Combined plot for all stages</h1>
+<pre class="r"><code>comb_all_female &lt;- bind_rows(
+  emmeans(fecundity_early, ~ mito * nuclear) %&gt;% as_tibble() %&gt;% mutate(stage = &quot;a) Early life&quot;),
+  emmeans(fecundity_total, ~ mito * nuclear) %&gt;% as_tibble() %&gt;% mutate(stage = &quot;b) Lifetime&quot;),
+  emtrends(rate_glmm, c(&quot;mito&quot;, &quot;nuclear&quot;), var = &quot;vial&quot;) %&gt;% as_tibble() %&gt;% 
+    mutate(stage = &quot;c) Rate of decline&quot;,
+           emmean = vial.trend)) %&gt;% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = &#39;Fecundity (EMM)&#39;) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~stage, scales = &quot;free_y&quot;) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+comb_all_female</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ggsave(filename = &#39;figures/femaleplot_norms3.pdf&#39;, height = 4, width = 12, dpi = 600, useDingbats = FALSE)</code></pre>
+</div>
+<div id="survival-analysis" class="section level1">
+<h1>&gt; Survival analysis</h1>
+<p>Finally, we modelled reproductive senescence using survival analysis
+based on the onset of infertility, i.e., the time (in vials) to event
+(final vial producing progeny for each female) as the response.</p>
+<pre class="r"><code>library(coxme)
+library(survminer)
+
+fsurv &lt;- fert_dat %&gt;% 
+  mutate(bin_prog = if_else(progeny == 0, 0, 1),
+         mito_snp = as.factor(mito_snp))
+
+fsurv$cum_pr &lt;- ave(fsurv$progeny, fsurv$ID, FUN = cumsum)
+fsurv &lt;- fsurv %&gt;% group_by(ID) %&gt;% slice(which.min(progeny)) %&gt;% mutate(EVENT = 1)
+
+fit1 &lt;- survfit(Surv(vial, EVENT) ~ mito + nuclear, data = fsurv)
+#summary(fit1)
+#anova(fit1)
+
+survplot &lt;- ggsurvplot(fit1, colour = &quot;mito&quot;,
+                       palette = rep(rev(met3), 3))
+
+survplot$plot + 
+  facet_wrap(~nuclear) + 
+  theme_bw() + 
+  theme(legend.position = &quot;&quot;) +
+  NULL</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="check-diagnostics-3" class="section level3">
+<h3>&gt;&gt;&gt; Check diagnostics</h3>
+<p>Using a simplified model without the random effects we can check the
+proportional hazards assumption.</p>
+<pre class="r"><code>plot(survfit(Surv(vial, EVENT) ~ mito + nuclear, data = fsurv), 
+     lty = 1:4, 
+     fun=&quot;cloglog&quot;, main = &quot;cloglog&quot;)
+
+test.ph &lt;- cox.zph(coxph(Surv(vial, EVENT) ~ mito * nuclear, data = fsurv))
+
+ggcoxzph(test.ph)</code></pre>
+<p><img src="figure/female_fertility.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/female_fertility.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We then use likelihood ratio tests comparing the full model to
+submodels excluding the effect of interest.</p>
+<pre class="r"><code>cox.des &lt;- coxme(Surv(vial, EVENT) ~ mito * nuclear + (1|LINE), data = fsurv)
+
+cox.des.n1 &lt;- coxme(Surv(vial, EVENT) ~ 1 + nuclear + (1|LINE), data = fsurv)
+cox.des.n2 &lt;- coxme(Surv(vial, EVENT) ~ mito + 1 + (1|LINE), data = fsurv)
+cox.des.n3 &lt;- coxme(Surv(vial, EVENT) ~ mito + nuclear + (1|LINE), data = fsurv)
+
+# posthoc tests
+bind_rows(anova(cox.des, cox.des.n1) %&gt;% broom::tidy(),
+          anova(cox.des, cox.des.n2) %&gt;% broom::tidy(),
+          anova(cox.des, cox.des.n3) %&gt;% broom::tidy()) %&gt;% #drop_na() %&gt;% 
+  kable(digits = 3, 
+        caption = &#39;Likelihood ratio tests comparing the full model to submodels excluding the main effect of interest&#39;) %&gt;% 
+  kable_styling(full_width = FALSE) %&gt;%
+  kableExtra::group_rows(&quot;Mitochondria&quot;, 1, 2) %&gt;%
+  kableExtra::group_rows(&quot;Nuclear&quot;, 3, 4) %&gt;%
+  kableExtra::group_rows(&quot;Mitonuclear interaction&quot;, 5, 6)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Likelihood ratio tests comparing the full model to submodels excluding
+the main effect of interest
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+logLik
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr grouplength="2">
+<td colspan="5" style="border-bottom: 1px solid;">
+<strong>Mitochondria</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~mito * nuclear + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1605.899
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~1 + nuclear + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1606.570
+</td>
+<td style="text-align:right;">
+1.341
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0.969
+</td>
+</tr>
+<tr grouplength="2">
+<td colspan="5" style="border-bottom: 1px solid;">
+<strong>Nuclear</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~mito * nuclear + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1605.899
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~mito + 1 + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1627.989
+</td>
+<td style="text-align:right;">
+44.180
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr grouplength="2">
+<td colspan="5" style="border-bottom: 1px solid;">
+<strong>Mitonuclear interaction</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~mito * nuclear + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1605.899
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+~mito + nuclear + (1 &amp;#124; LINE)
+</td>
+<td style="text-align:right;">
+-1606.201
+</td>
+<td style="text-align:right;">
+0.603
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.963
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>cox_emm &lt;- emmeans(cox.des, ~ mito * nuclear)
+
+# posthoc tests
+emmeans(cox_emm, pairwise ~ nuclear, adjust = &quot;tukey&quot;)</code></pre>
+<pre>$emmeans
+ nuclear emmean     SE  df asymp.LCL asymp.UCL
+ A        0.610 0.0840 Inf     0.446    0.7749
+ B       -0.103 0.0723 Inf    -0.245    0.0387
+ C       -0.473 0.0811 Inf    -0.632   -0.3138
+
+Results are averaged over the levels of: mito 
+Results are given on the log (not the response) scale. 
+Confidence level used: 0.95 
+
+$contrasts
+ contrast estimate    SE  df z.ratio p.value
+ A - B       0.713 0.136 Inf   5.254  <.0001
+ A - C       1.083 0.142 Inf   7.601  <.0001
+ B - C       0.370 0.133 Inf   2.786  0.0147
+
+Results are averaged over the levels of: mito 
+Results are given on the log (not the response) scale. 
+P value adjustment: tukey method for comparing a family of 3 estimates 
+</pre>
+<pre class="r"><code>#emmeans(cox_emm, pairwise ~ nuclear, adjust = &quot;tukey&quot;, type = &quot;response&quot;)
+
+# posthoc tests
+bind_rows(emmeans(cox_emm, pairwise ~ nuclear, adjust = &quot;tukey&quot;)$contrasts %&gt;% broom::tidy(),
+          emmeans(cox_emm, pairwise ~ nuclear, adjust = &quot;tukey&quot;, type = &quot;response&quot;)$contrasts %&gt;% broom::tidy()) %&gt;% 
+  kable(digits = 3, 
+        caption = &#39;Posthoc Tukey tests to compare which groups differ. Results are averaged over the levels of mito&#39;) %&gt;% 
+  kable_styling(full_width = FALSE) %&gt;%
+  kableExtra::group_rows(&quot;log scale&quot;, 1, 3) %&gt;%
+  kableExtra::group_rows(&quot;Hazard ratios&quot;, 4, 6)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Posthoc Tukey tests to compare which groups differ. Results are averaged
+over the levels of mito
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+contrast
+</th>
+<th style="text-align:right;">
+null.value
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+adj.p.value
+</th>
+<th style="text-align:right;">
+ratio
+</th>
+<th style="text-align:right;">
+null
+</th>
+</tr>
+</thead>
+<tbody>
+<tr grouplength="3">
+<td colspan="10" style="border-bottom: 1px solid;">
+<strong>log scale</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+A - B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.713
+</td>
+<td style="text-align:right;">
+0.136
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+5.254
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+A - C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.083
+</td>
+<td style="text-align:right;">
+0.142
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+7.601
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+B - C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.370
+</td>
+<td style="text-align:right;">
+0.133
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+2.786
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr grouplength="3">
+<td colspan="10" style="border-bottom: 1px solid;">
+<strong>Hazard ratios</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+A / B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.277
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+5.254
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+2.041
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+A / C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.421
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+7.601
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+2.954
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;" indentlevel="1">
+nuclear
+</td>
+<td style="text-align:left;">
+B / C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.192
+</td>
+<td style="text-align:right;">
+Inf
+</td>
+<td style="text-align:right;">
+2.786
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+<td style="text-align:right;">
+1.447
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="matched-vs.-mismatched-3" class="section level3">
+<h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
+<pre class="r"><code>cox.coevo &lt;- coxme(Surv(vial, EVENT) ~ coevolved + (1|LINE), data = fsurv)
+
+#anova(cox.coevo)
+summary(cox.coevo)</code></pre>
+<pre>Mixed effects coxme model
+ Formula: Surv(vial, EVENT) ~ coevolved + (1 | LINE) 
+    Data: fsurv 
+
+  events, n = 338, 338
+
+Random effects:
+  group  variable        sd  variance
+1  LINE Intercept 0.3747831 0.1404624
+                  Chisq    df         p   AIC    BIC
+Integrated loglik 12.13  2.00 2.320e-03  8.13   0.49
+ Penalized loglik 54.41 16.58 6.524e-06 21.24 -42.15
+
+Fixed effects:
+              coef exp(coef) se(coef)   z     p
+coevolved1 0.04908   1.05030  0.09776 0.5 0.616
+</pre>
+<pre class="r"><code>cox.coevo.n1 &lt;- coxme(Surv(vial, EVENT) ~ 1 + (1|LINE), data = fsurv)
+
+anova(cox.coevo, cox.coevo.n1) # mito NS</code></pre>
+<pre>Analysis of Deviance Table
+ Cox model: response is  Surv(vial, EVENT)
+ Model 1: ~coevolved + (1 | LINE)
+ Model 2: ~1 + (1 | LINE)
+   loglik  Chisq Df P(>|Chi|)
+1 -1628.0                    
+2 -1628.1 0.2392  1    0.6248
+</pre>
+</div>
+<div id="mito-type-analysis-3" class="section level3">
+<h3>&gt;&gt;&gt; Mito-type analysis</h3>
+<p>The mito-type analysis throws an error due to the rank deficiency of
+the design.</p>
+<pre class="r"><code># cox.snp &lt;- coxme(Surv(vial, EVENT) ~ mito_snp * nuclear + (1|LINE), data = fsurv)
+# 
+# summary(cox.snp)
+# 
+# cox.snp.n1 &lt;- coxme(Surv(vial, EVENT) ~ 1 + nuclear + (1|LINE), data = fsurv)
+# cox.snp.n2 &lt;- coxme(Surv(vial, EVENT) ~ mito_snp + 1 + (1|LINE), data = fsurv)
+# cox.snp.n3 &lt;- coxme(Surv(vial, EVENT) ~ mito_snp + nuclear + (1|LINE), data = fsurv)
+# 
+# anova(cox.snp, cox.snp.n1) # mito NS
+# anova(cox.snp, cox.snp.n2) # nuclear sig
+# anova(cox.snp, cox.snp.n3) # interaction NS</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre>R version 4.4.0 (2024-04-24)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/London
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] survminer_0.4.9  ggpubr_0.6.0     coxme_2.2-22     bdsmatrix_1.3-7 
+ [5] survival_3.7-0   conflicted_1.2.0 showtext_0.9-7   showtextdb_3.0  
+ [9] sysfonts_0.8.9   knitrhooks_0.0.4 knitr_1.48       kableExtra_1.4.0
+[13] emmeans_1.10.3   DHARMa_0.4.6     lme4_1.1-35.5    Matrix_1.7-0    
+[17] lubridate_1.9.3  forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4     
+[21] purrr_1.0.2      readr_2.1.5      tidyr_1.3.1      tibble_3.2.1    
+[25] ggplot2_3.5.1    tidyverse_2.0.0  workflowr_1.7.1 
+
+loaded via a namespace (and not attached):
+  [1] tensorA_0.36.2.1     rstudioapi_0.16.0    jsonlite_1.8.8      
+  [4] datawizard_0.11.0    magrittr_2.0.3       estimability_1.5.1  
+  [7] farver_2.1.2         nloptr_2.1.1         rmarkdown_2.27      
+ [10] fs_1.6.4             vctrs_0.6.5          MetBrewer_0.2.0     
+ [13] memoise_2.0.1        minqa_1.2.7          rstatix_0.7.2       
+ [16] htmltools_0.5.8.1    distributional_0.4.0 broom_1.0.6         
+ [19] tidybayes_3.0.6      sass_0.4.9           bslib_0.7.0         
+ [22] pbkrtest_0.5.3       plyr_1.8.9           zoo_1.8-12          
+ [25] cachem_1.1.0         whisker_0.4.1        mime_0.12           
+ [28] lifecycle_1.0.4      iterators_1.0.14     pkgconfig_2.0.3     
+ [31] gap_1.5-3            R6_2.5.1             fastmap_1.2.0       
+ [34] shiny_1.8.1.1        rbibutils_2.2.16     digest_0.6.36       
+ [37] numDeriv_2016.8-1.1  colorspace_2.1-0     patchwork_1.2.0     
+ [40] ps_1.7.7             rprojroot_2.0.4      qgam_1.3.4          
+ [43] labeling_0.4.3       km.ci_0.5-6          fansi_1.0.6         
+ [46] timechange_0.3.0     httr_1.4.7           abind_1.4-5         
+ [49] mgcv_1.9-1           compiler_4.4.0       bit64_4.0.5         
+ [52] withr_3.0.0          doParallel_1.0.17    backports_1.5.0     
+ [55] carData_3.0-5        performance_0.12.0   highr_0.11          
+ [58] ggsignif_0.6.4       MASS_7.3-61          tools_4.4.0         
+ [61] httpuv_1.6.15        glue_1.7.0           callr_3.7.6         
+ [64] nlme_3.1-165         promises_1.3.0       grid_4.4.0          
+ [67] checkmate_2.3.1      getPass_0.2-4        see_0.8.4           
+ [70] generics_0.1.3       gtable_0.3.5         KMsurv_0.1-5        
+ [73] tzdb_0.4.0           data.table_1.15.4    hms_1.1.3           
+ [76] car_3.1-2            xml2_1.3.6           utf8_1.2.4          
+ [79] ggrepel_0.9.5        foreach_1.5.2        pillar_1.9.0        
+ [82] ggdist_3.3.2         vroom_1.6.5          posterior_1.6.0     
+ [85] later_1.3.2          splines_4.4.0        lattice_0.22-6      
+ [88] bit_4.0.5            tidyselect_1.2.1     git2r_0.33.0        
+ [91] gridExtra_2.3        arrayhelpers_1.1-0   svglite_2.1.3       
+ [94] stats4_4.4.0         xfun_0.45            MuMIn_1.48.4        
+ [97] stringi_1.8.4        yaml_2.3.9           boot_1.3-30         
+[100] codetools_0.2-20     evaluate_0.24.0      cli_3.6.3           
+[103] xtable_1.8-4         systemfonts_1.1.0    Rdpack_2.6          
+[106] munsell_0.5.1        processx_3.8.4       jquerylib_0.1.4     
+[109] survMisc_0.5.6       Rcpp_1.0.12          coda_0.19-4.1       
+[112] svUnit_1.0.6         parallel_4.4.0       bayestestR_0.13.2   
+[115] gap.datasets_0.0.6   viridisLite_0.4.2    mvtnorm_1.2-5       
+[118] lmerTest_3.1-3       scales_1.3.0         insight_0.20.1      
+[121] crayon_1.5.3         rlang_1.1.4         
+</pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
