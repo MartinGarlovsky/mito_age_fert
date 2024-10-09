@@ -1,0 +1,1591 @@
+---
+title: "Male fertility"
+author: "MartinGarlovsky"
+date: "2022-07-27"
+output: 
+  workflowr::wflow_html:
+    code_folding: hide 
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+
+#### Load packages
+```{r}
+library(tidyverse)
+
+library(lme4)
+library(DHARMa)
+library(emmeans)
+library(kableExtra)
+library(knitrhooks) # install with devtools::install_github("nathaneastwood/knitrhooks")
+library(showtext)
+
+library(conflicted)
+
+select <- dplyr::select
+filter <- dplyr::filter
+
+output_max_height() # a knitrhook option
+
+options(stringsAsFactors = FALSE)
+
+# colour palettes
+met.pal <- MetBrewer::met.brewer('Johnson')
+met3 <- met.pal[c(1, 3, 5)]
+
+# set contrasts
+options(contrasts = c("contr.sum", "contr.poly"))
+
+```
+
+#### Load data
+```{r}
+# fecundity and hatching success
+male_fert_filt <- read.csv('data/male_fertility.csv') %>% 
+  mutate(age = fct_relevel(age, c("young","old")),
+         mito_snp = as.factor(mito_snp),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+
+#xtabs(~ mito + nuclear, data = male_fert)
+
+# sperm viability
+sperm_vib_filt <- read.csv("data/wrangled/sperm_viability_wrangled.csv") %>% 
+  mutate(age = fct_relevel(age, c("young","old")),
+         mito_snp = as.factor(mito_snp),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+
+#xtabs(~ mito + nuclear, data = sperm_vib_filt)
+
+# sperm metabolism
+sperm_met <- read.csv("data/wrangled/sperm_met_wrangled.csv") %>% 
+  mutate(mito_snp = as.factor(mito_snp),
+         p.a2 = a2/100, # convert to percentage proportion
+         coevolved = if_else(mito == nuclear, "matched", "mismatched")) 
+
+#xtabs(~ mito + nuclear, data = sperm_met)
+
+# sperm competition data
+## P1
+defence <- read.csv("data/wrangled/sperm_defence.csv", header = TRUE) %>% 
+  mutate(mito_snp = as.factor(mito_snp),
+         Day = ordered(Day),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+
+## P2
+offence <- read.csv("data/wrangled/sperm_offence.csv", header = TRUE) %>% 
+  mutate(mito_snp = as.factor(mito_snp),
+         Day = ordered(Day),
+         coevolved = if_else(mito == nuclear, "matched", "mismatched"))
+
+```
+
+
+# > Fecundity
+```{r}
+
+male_fert_filt %>% 
+  group_by(mito, nuclear, age) %>% 
+  summarise(mn = mean(total_eggs),
+            se = sd(total_eggs)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = mito, y = mn, fill = nuclear)) +
+  geom_point(data = male_fert_filt,
+             aes(y = total_eggs, colour = nuclear), alpha = .25,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Partner fecundity') +
+  facet_wrap(~ age, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+
+hist(male_fert_filt$total_eggs, breaks = 50)
+
+# fit linear model - model diagnostics look better?
+male_fec_test <- lmerTest::lmer(total_eggs ~ mito * nuclear * age + (1|LINE:age), 
+                                data = male_fert_filt, REML = TRUE) 
+
+anova(male_fec_test, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(male_fec_test)
+
+fec_emm <- emmeans(male_fec_test, ~ mito * nuclear * age)
+
+#pairs(fec_emm, simple = list("age", "mito", "nuclear"))
+
+bind_rows(pairs(fec_emm, simple = list("age", "mito", "nuclear"))$`simple contrasts for age` %>% broom::tidy(),
+          pairs(fec_emm, simple = list("age", "mito", "nuclear"))$`simple contrasts for mito` %>% broom::tidy() %>%
+            rename(p.value = adj.p.value),
+          pairs(fec_emm, simple = list("age", "mito", "nuclear"))$`simple contrasts for nuclear` %>% broom::tidy() %>%
+            rename(p.value = adj.p.value)) %>% 
+  mutate(p.val = ifelse(p.value < 0.001, '< 0.001', round(p.value, 3))) %>% 
+  select(-p.value, -term) %>% relocate(age, .before = contrast) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Age", 1, 9) %>%
+  kableExtra::group_rows("Mito contrasts", 10, 27) %>%
+  kableExtra::group_rows("Nuclear contrasts", 28, 45)
+
+```
+
+### >>> Results {.tabset}
+#### >>>> Reaction norms
+```{r}
+# reaction norms
+male_fecundity_norm <- emmeans(male_fec_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Partner fecundity (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() +
+  NULL
+
+male_fecundity_norm
+```
+
+#### >>>> Raw data
+```{r}
+male_fecundity_raw <- emmeans(male_fec_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_jitter(data = male_fert_filt,
+              aes(y = total_eggs, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              size = 0.75, alpha = .1) +
+  geom_jitter(data = male_fert_filt %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(total_eggs)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Partner fecundity (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = male_fert_filt %>% group_by(mito, nuclear, age) %>% count(), aes(y = -5, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/male_fecundity_raw.pdf', height = 4, width = 8, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+male_fecundity_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+
+male_fec_coevo <- lmerTest::lmer(total_eggs ~ coevolved * age + (1 + age|LINE), 
+                                 data = male_fert_filt, REML = TRUE) 
+
+anova(male_fec_coevo, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(male_fec_coevo)
+
+```
+
+
+### >>> Mito-type analysis
+```{r}
+
+# fit linear model
+male_fec1_snp <- lmerTest::lmer(total_eggs ~ mito_snp * nuclear * age + (1|LINE:age), 
+                                data = male_fert_filt, REML = TRUE) 
+
+anova(male_fec1_snp, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+#car::Anova(male_fec1_snp, type = "III")
+
+fec_emm_snp <- emmeans(male_fec1_snp, ~ mito_snp * nuclear * age)
+
+male_fecundity_snp <- fec_emm_snp %>% as_tibble() %>% drop_na() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito_snp)) +
+  geom_jitter(data = male_fert_filt,
+              aes(y = total_eggs, colour = mito_snp),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) + 
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Partner fecundity (EMM ± 95% CIs)') +
+  facet_wrap(~ age) +
+  scale_colour_viridis_d(option = "H") +
+  scale_fill_viridis_d(option = "H") +
+  theme_bw() + 
+  theme() + 
+  #ggsave('figures/male_fecundity_snp.pdf', height = 4, width = 8.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+male_fecundity_snp
+
+```
+
+# > Hatching success
+Hatching success, our proxy for fertilisation success, shows different patterns in young and old males. In old males there is a very bimodal distribtuion, i.e., some males are fertile while others are completely sterile. Therefore, we model young and old males separately.
+```{r}
+
+male_fert_filt %>%
+  group_by(mito, nuclear, age) %>% 
+  summarise(mn = mean(fertilised),
+            se = sd(fertilised)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = male_fert_filt,
+             aes(y = fertilised, colour = mito), alpha = .25,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Hatching success') +
+  coord_cartesian(ylim = c(0, 1)) +
+  facet_wrap(~ age, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  #ggsave('figures/male_hatchingsuccess_all.pdf', height = 4, width = 9, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+#xtabs(~ mtn + age, data = male_fert_filt)
+
+```
+
+### >>> Young males {.tabset}
+In young males we model the proportion of eggs that hatch. 
+```{r}
+##model young only
+hatch2 <- glmer(cbind(total_offs, total_fail) ~ mito * nuclear + (1|LINE) + (1|OLRE),
+                data = male_fert_filt %>% filter(age == "young"), 
+                family = 'binomial')
+```
+
+#### >>>> Check model diagnostics
+```{r, fig.height=12}
+performance::check_model(hatch2)
+performance::check_overdispersion(hatch2)
+```
+
+
+```{r}
+testDispersion(hatch2)
+simulationOutput <- simulateResiduals(fittedModel = hatch2, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)), breaks = 50)
+plot(simulationOutput)
+```
+
+
+### >>> Results {.tabset}
+```{r}
+
+car::Anova(hatch2, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(hatch2)
+
+hatch_emm2 <- emmeans(hatch2, ~ mito * nuclear)
+
+emmeans(hatch2, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests for comparison between nuclear genotypes') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+
+#### >>>> Reaction norms
+```{r}
+
+# reaction norms
+hatchingsuccess_young_norm <- emmeans(hatch2, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = '% Hatching success (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() +
+  NULL
+
+hatchingsuccess_young_norm
+
+```
+
+#### >>>> Raw data with means
+```{r}
+
+hatchingsuccess_young_raw <- emmeans(hatch2, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = male_fert_filt %>% filter(age == "young"),
+              aes(y = fertilised, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) + 
+  geom_jitter(data = male_fert_filt %>% filter(age == "young") %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(fertilised)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = '% Hatching success (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = male_fert_filt %>% filter(age == "young") %>% 
+              group_by(mito, nuclear) %>% count(), aes(y = -0.04, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/hatchingsuccess_young_raw.pdf', height = 4, width = 5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+hatchingsuccess_young_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r, fig.height=12}
+
+hatch_young_coevo <- glmer(cbind(total_offs, total_fail) ~ coevolved + (1|LINE) + (1|OLRE),
+                           data = male_fert_filt %>% filter(age == "young"), 
+                           family = 'binomial')
+
+performance::check_model(hatch_young_coevo)
+
+car::Anova(hatch_young_coevo, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+### >>> Mito-type analysis
+```{r, fig.height=12}
+
+young_fert_snp <- glmer(cbind(total_offs, total_fail) ~ mito_snp * nuclear + (1|LINE) + (1|OLRE),
+                        data = male_fert_filt %>% filter(age == "young"),
+                        family = "binomial",
+                        control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+performance::check_model(young_fert_snp)
+
+car::Anova(young_fert_snp, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+
+### >>> Old males {.tabset}
+In old males we will model fertility as a binary variable - whether a male was fertile (1) or sterile (0). A stacked barchart of the binary response again clearly shows most young males are fertile, but a significant proporiton of old males fail to fertilise any eggs.  
+```{r}
+# add a new variable giving a binary fertile (1) or sterile (0) based on whether the proportion fertilised was 0 or greater than 0.
+male_sterilty <- male_fert_filt %>% 
+  mutate(sterility = if_else(fertilised == 0, 'sterile', 'fertile'),
+         sterilbin = if_else(fertilised == 0, 0, 1),
+         OLRE = 1:nrow(.))
+
+male_sterilty %>% 
+  group_by(mito, nuclear, age, sterility) %>% 
+  count() %>% 
+  ggplot(aes(x = nuclear, y = n, fill = sterility)) +
+  geom_col(position = 'fill') + 
+  labs(y = "Proportion of males") +
+  facet_grid(mito ~ age)
+
+# model old males only
+ster_md <- glmer(sterilbin ~ mito * nuclear + (1|LINE), family = 'binomial', 
+                 data = male_sterilty %>% filter(age == "old"))
+
+#summary(ster_md)
+```
+
+#### >>>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(ster_md)
+performance::check_overdispersion(ster_md)
+```
+
+#### >>>> Results {.tabset}
+```{r}
+
+car::Anova(ster_md, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+ster_emm <- emmeans(ster_md, ~ mito * nuclear)
+
+emmeans(ster_emm, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests for comparison between nuclear genotypes') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+##### >>>>> Reaction norms
+```{r}
+
+# reaction norms
+hatchingsuccess_old_norm <- emmeans(ster_emm, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Proportion fertile (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() +
+  NULL
+
+hatchingsuccess_old_norm
+
+```
+
+##### >>>>> Raw data and means
+```{r}
+
+hatchingsuccess_old_raw <- emmeans(ster_emm, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = male_fert_filt %>% filter(age == "old"),
+              aes(y = fertilised, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) + 
+  geom_jitter(data = male_fert_filt %>% filter(age == "old") %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(fertilised)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Proportion fertile (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = male_fert_filt %>% filter(age == "young") %>% 
+              group_by(mito, nuclear) %>% count(), aes(y = -0.04, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/hatchingsuccess_old_raw.pdf', height = 4, width = 5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+hatchingsuccess_old_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+ster_coevo <- glmer(sterilbin ~ coevolved + (1|LINE), family = 'binomial', 
+                    data = male_sterilty %>% filter(age == "old"))
+
+car::Anova(ster_coevo, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+
+### >>> Mito-type analysis
+```{r}
+ster_md_snp <- glmer(sterilbin ~ mito_snp * nuclear + (1|LINE), 
+                     family = 'binomial', 
+                     data = male_sterilty %>% filter(age == "old"))
+
+#summary(ster_md)
+
+car::Anova(ster_md_snp, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+##### >>>>> combined plot
+```{r}
+
+comb_fert <- bind_rows(
+  emmeans(hatch2, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(age = "Young"),
+  emmeans(ster_emm, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(age = "Old")) %>% 
+  mutate(age = fct_relevel(tolower(age), c("young", "old"))) %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Proportion fertile (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~age) +
+  theme_bw() + 
+  theme() +
+  NULL
+
+comb_fert
+
+```
+
+
+# > Sperm viability
+
+We measured sperm viability using live/dead staining in a control medium (t0 = `c`) and after 30mins in a stressor medium (t30 = `t`). First, we analysed control and treatment separately. For the measurement of sperm viability, we collected all males on a single day for each `block`. However, the dissection, staining and incubation protocol necessitated measurements were carried out over several days. The measurement of sperm viability in young males (collected at 5 days old) thus extended for 8 days and that of old males (collected at 6 weeks old) for 6 days. To account for this variation in age we included dissection `day` (an extension of male age) and `block` as fixed covariates.
+
+The sperm viability models returned a singularity warning message due to a zero-variance component estimate for the line random effect intercept. We retained these models after trying a range of alternatives and checking simplified models without the random slopes term that all resulted in the same qualitative findings for the fixed effects part of the model.
+
+```{r}
+
+sperm_vib_filt %>% 
+  group_by(mito, nuclear, age, treatment) %>% 
+  summarise(mn = mean(viability),
+            se = sd(viability)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = sperm_vib_filt %>% 
+               group_by(mito, nuclear, age, treatment, male_ID) %>% 
+               summarise(viability = mean(viability)),
+             aes(y = viability, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_line(aes(group = mito), position = position_dodge(width = .5)) + 
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability') +
+  facet_grid(treatment ~ age, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+## >>> Control treatment (t0) {.tabset}
+
+First we take a look at the data to see how response changes with the covariates.
+
+### >>>> Day effect
+```{r}
+
+spvfilt_control <- sperm_vib_filt %>% filter(treatment == 'c')
+
+spvfilt_control %>% 
+  group_by(mito, nuclear, age, days) %>% 
+  summarise(mn = mean(viability),
+            se = sd(viability)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = spvfilt_control %>% 
+                group_by(mito, nuclear, age, days, male_ID) %>% summarise(viability = mean(viability)),
+             aes(y = viability, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) + 
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability') +
+  facet_grid(age ~ days, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+### >>>> Block effect
+```{r}
+spvfilt_control %>% 
+  group_by(mito, nuclear, age, block) %>% 
+  summarise(mn = mean(viability),
+            se = sd(viability)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = spvfilt_control %>% 
+                group_by(mito, nuclear, age, block, male_ID) %>% summarise(viability = mean(viability)),
+             aes(y = viability, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) + 
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability') +
+  facet_grid(age ~ block, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+```
+
+## >>> Results {.tabset}
+```{r}
+viability_m1 <- glmer(cbind(live, dead) ~ mito * nuclear * age + days + block + (1|LINE:age) + (1|male_ID) + (1|OLRE),
+                      data = spvfilt_control, family = 'binomial',
+                   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+```
+
+### >>>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(viability_m1)
+performance::check_overdispersion(viability_m1)
+```
+
+```{r}
+# diagnostics
+testDispersion(viability_m1)
+simulationOutput <- simulateResiduals(fittedModel = viability_m1, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+### >>>> 
+```{r}
+car::Anova(viability_m1, type = "3") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(viability_m1)
+
+# posthoc tests
+bind_rows(emmeans(viability_m1, pairwise ~ age | nuclear, adjust = "tukey")$contrasts %>% broom::tidy(),
+          emmeans(viability_m1, pairwise ~ nuclear | age, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value)) %>% 
+  mutate(p.val = ifelse(p.value < 0.001, '< 0.001', round(p.value, 3))) %>% 
+  select(-p.value, -term) %>% relocate(age, .before = contrast) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Age", 1, 3) %>%
+  kableExtra::group_rows("Nuclear - old", 4, 6) %>%
+  kableExtra::group_rows("Nuclear - young", 7, 9)
+
+```
+
+### >>>> Reaction norms 
+```{r}
+
+sperm_vib_norm <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+  #               width = .25, position = position_dodge(width = .65)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  #scale_y_continuous(limits = c(0, 1.05)) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+sperm_vib_norm
+
+```
+
+### >>>> Raw data and means
+```{r}
+
+sperm_vib_raw <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = spvfilt_control %>% 
+               group_by(mito, nuclear, age, treatment, male_ID) %>% 
+               summarise(viability = mean(viability)),
+              aes(y = viability, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              size = 0.75, alpha = .1) +
+  geom_jitter(data = spvfilt_control %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(viability)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = spvfilt_control %>% 
+              group_by(mito, nuclear, age) %>% 
+              summarise(N = n_distinct(male_ID)), 
+            aes(y = -0.04, label = N), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/sperm_vib_contrl_supp.pdf', height = 4, width = 8, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+sperm_vib_raw
+
+```
+
+### Matched vs. mismatched
+```{r}
+viability_coevo <- glmer(cbind(live, dead) ~ coevolved * age + days + block + (age|LINE) + (1|male_ID) + (1|OLRE),
+                      data = spvfilt_control, family = 'binomial')
+
+car::Anova(viability_coevo, type = "3")
+
+```
+
+### Mito-type analysis
+```{r}
+viability_snp <- glmer(cbind(live, dead) ~ mito_snp * nuclear * age + 
+                         days + block + (1 + age|LINE) + (1|male_ID) + (1|OLRE),
+                       data = spvfilt_control, family = 'binomial',
+                       control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=50000)))
+
+car::Anova(viability_snp, type = "3")
+
+```
+
+
+## >> Stress treatment (t30) {.tabset}
+```{r}
+spvfilt_treat <- sperm_vib_filt %>% filter(treatment == 't')
+```
+
+### >>>> Day effect
+```{r}
+
+spvfilt_treat %>% 
+  group_by(mito, nuclear, age, block) %>% 
+  summarise(mn = mean(viability),
+            se = sd(viability)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = spvfilt_treat %>% 
+                group_by(mito, nuclear, age, block, male_ID) %>% summarise(viability = mean(viability)),
+             aes(y = viability, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_line(aes(group = mito), position = position_dodge(width = .5)) + 
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability') +
+  facet_grid(age ~ block, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+### >>>> Block effect
+```{r}
+
+spvfilt_treat %>% 
+  group_by(mito, nuclear, age, days) %>% 
+  summarise(mn = mean(viability),
+            se = sd(viability)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = spvfilt_treat %>% 
+                group_by(mito, nuclear, age, days, male_ID) %>% summarise(viability = mean(viability)),
+             aes(y = viability, colour = mito), alpha = .15,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_line(aes(group = mito), position = position_dodge(width = .5)) + 
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability') +
+  facet_grid(age ~ days, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+```
+
+##
+
+### >>> Results {.tabset}
+```{r}
+# model
+viability_m2 <- glmer(cbind(live, dead) ~ mito * nuclear * age + days + block + (1 + age|LINE) + (1|male_ID) + (1|OLRE),
+                      data = spvfilt_treat, family = 'binomial',
+                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+```
+
+#### >>>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(viability_m2)
+performance::check_overdispersion(viability_m2)
+```
+
+
+```{r, fig.height=12}
+testDispersion(viability_m2)
+simulationOutput <- simulateResiduals(fittedModel = viability_m2, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+#### >>>> Results {.tabset}
+```{r, fig.height=12}
+car::Anova(viability_m2, type = "3")
+
+#summary(viability_m2)
+
+# posthoc tests
+bind_rows(emmeans(viability_m2, pairwise ~ mito, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value),
+          emmeans(viability_m2, pairwise ~ block, adjust = "tukey")$contrasts %>% broom::tidy(),
+          emmeans(viability_m2, pairwise ~ age | nuclear, adjust = "tukey")$contrasts %>% broom::tidy(),
+          emmeans(viability_m2, pairwise ~ nuclear | age, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value)) %>% 
+  mutate(p.val = ifelse(p.value < 0.001, '< 0.001', round(p.value, 3))) %>% 
+  select(-p.value, -term) %>% relocate(age, .before = contrast) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Mitochondria", 1, 3) %>%
+  kableExtra::group_rows("Block", 4, 4) %>%
+  kableExtra::group_rows("Age", 5, 7) %>%
+  kableExtra::group_rows("Nuclear - old", 8, 10) %>%
+  kableExtra::group_rows("Nuclear - young", 11, 13)
+
+
+```
+
+##### >>>>> Reaction norms
+```{r}
+sperm_stress_norm <- emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+sperm_stress_norm
+
+```
+
+##### >>>>> Raw data and means
+```{r, fig.height=12}
+
+sperm_stress_raw <- emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = spvfilt_treat %>% 
+               group_by(mito, nuclear, age, treatment, male_ID) %>% 
+               summarise(viability = mean(viability)),
+              aes(y = viability, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              size = 0.75, alpha = .1) +
+  geom_jitter(data = spvfilt_treat %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(viability)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = spvfilt_control %>% 
+              group_by(mito, nuclear, age) %>% 
+              summarise(N = n_distinct(male_ID)), 
+            aes(y = -0.04, label = N), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/sperm_stress_raw.pdf', height = 4, width = 8, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+sperm_stress_raw
+
+```
+
+### Matched vs. mismatched
+```{r}
+stress_coevo <- glmer(cbind(live, dead) ~ coevolved * age + days + block + (age|LINE) + (1|male_ID) + (1|OLRE),
+                      data = spvfilt_treat, family = 'binomial')
+
+car::Anova(stress_coevo, type = "3")
+
+```
+
+### Mito-type analysis
+```{r}
+viability_m2_snp <- glmer(cbind(live, dead) ~ mito_snp * nuclear * age +  days + block + 
+                            (1 + age|LINE) + (1|male_ID) + (1|OLRE),
+                          data = spvfilt_treat, family = 'binomial',
+                      control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 50000)))
+
+car::Anova(viability_m2_snp, type = "3")
+
+```
+
+### Combined plots
+```{r}
+
+sperm_diffs_norm <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  geom_line(data = emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble(),
+            aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(data = emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble(),
+             aes(fill = mito), size = 3, pch = 22, position = position_dodge(width = .5)) + 
+  labs(y = 'Sperm viability (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+sperm_diffs_norm
+
+```
+
+
+## >> Sperm quality {.tabset}
+For the analysis of sperm quality we calculated the mean difference in sperm viability between treated and control for each male. In the plots below lines connect the mean measurements for each male, showing the overall average decline in viability after stress treatment.
+```{r}
+# calculate difference in viability between treatment/control for each male
+viability_diff <- sperm_vib_filt %>%
+  group_by(treatment, mito, mito_snp, nuclear, coevolved, LINE, age, male_ID, block, days) %>% 
+  summarise(mn_vib = mean(viability)) %>% #filter(male_ID == 1) %>% 
+  pivot_wider(names_from = treatment, 
+              values_from = mn_vib) %>% 
+  mutate(diff = t - c)
+```
+
+### >>> Young males
+```{r}
+viability_diff %>% pivot_longer(cols = c(c, t)) %>% filter(age == "young") %>% 
+  ggplot(aes(x = name, y = value)) + 
+  geom_line(aes(group = male_ID, colour = mito)) +
+  scale_colour_manual(values = met3) +
+  facet_grid(mito ~ nuclear) +
+  NULL
+```
+
+### >>> Old males
+```{r}
+viability_diff %>% pivot_longer(cols = c(c, t)) %>% filter(age == "old") %>% 
+  ggplot(aes(x = name, y = value)) + 
+  geom_line(aes(group = male_ID, colour = mito)) +
+  scale_colour_manual(values = met3) +
+  facet_grid(mito ~ nuclear) +
+  NULL
+```
+
+
+```{r}
+hist(viability_diff$diff)
+
+vib_diff_test <- lmerTest::lmer(diff ~ mito * nuclear * age + block + days + (1 + age|LINE), 
+                                data = viability_diff)
+```
+
+##
+
+### >>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(vib_diff_test)
+```
+
+
+```{r}
+testDispersion(vib_diff_test)
+simulationOutput <- simulateResiduals(fittedModel = vib_diff_test, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+### >>> Results {.tabset}
+```{r}
+anova(vib_diff_test, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
+  kable_styling(full_width = FALSE)
+
+#summary(vib_diff_test)
+
+# posthoc tests
+bind_rows(emmeans(vib_diff_test, pairwise ~ age, adjust = "tukey")$contrasts %>% broom::tidy(),
+          emmeans(vib_diff_test, pairwise ~ block, adjust = "tukey")$contrasts %>% broom::tidy()) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ. Results are averaged over the levels of: mito, nuclear, age, block') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Age", 1, 1) %>%
+  kableExtra::group_rows("Block", 2, 2)
+
+emtrends(vib_diff_test, ~ days, var = "days") %>% broom::tidy() %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests for days effect. Results are averaged over the levels of: mito, nuclear, age, block') %>% 
+  kable_styling(full_width = FALSE)
+
+```
+
+#### >>>> Reaction norms
+```{r}
+sperm_qual_norm <- emmeans(vib_diff_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 23, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm viability (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+sperm_qual_norm
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+vib_diff_coevo <- lmerTest::lmer(diff ~ coevolved * age + block + days + (age|LINE), 
+                                 data = viability_diff,
+                                 na.action = 'na.fail')
+
+anova(vib_diff_coevo, type = "III", ddf = "Kenward-Roger")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+
+vib_diff_snp <- lmerTest::lmer(diff ~ mito_snp * nuclear * age + block + days + (1 + age|LINE), 
+                               data = viability_diff)
+
+anova(vib_diff_snp, type = "III", ddf = "Kenward-Roger")
+
+```
+
+# > Sperm metabolic rate
+We measured the metabolic rate of sperm dissected from seminal vesicles using NAD(P)H autofluorescence lifetime imaging (FLIM). Specifically, here we use parameter a2 (see online supplementary material for detailed methods). 
+
+Looking at the data there is a clear outlier in old males where `a2` > 50. We will analyse the data including and excluding this outlier. 
+
+```{r}
+sperm_met %>% 
+  group_by(mito, nuclear, age) %>% 
+  summarise(mn = mean(a2),
+            se = sd(a2)/sqrt(n()),
+            s95 = se * 1.96) %>% 
+  ggplot(aes(x = nuclear, y = mn, fill = mito)) +
+  geom_point(data = sperm_met,
+             aes(y = a2, colour = mito), alpha = .25,
+             position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
+  geom_errorbar(aes(ymin = mn - s95, ymax = mn + s95), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'a2') +
+  facet_wrap(~ age, scales = 'free_x') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  NULL
+```
+
+## >> Analysis {.tabset}
+```{r}
+hist(sperm_met$p.a2, breaks = 50)
+```
+
+### >>> With outlier
+```{r}
+met_mod_outlier_test <- lmerTest::lmer(p.a2 ~ mito * nuclear * age + (1 + age|LINE),
+                                       data = sperm_met, REML = TRUE)
+
+anova(met_mod_outlier_test, type = "III", ddf = "Kenward-Roger")
+
+```
+
+### >>> Without outlier
+```{r}
+met_mod_test <- lmerTest::lmer(p.a2 ~ mito * nuclear * age + (1 + age|LINE),
+                                       data = sperm_met %>% filter(a2 <= 30), REML = TRUE)
+```
+
+#### >>>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(met_mod_outlier_test)
+```
+
+
+```{r}
+testDispersion(met_mod_outlier_test)
+simulationOutput <- simulateResiduals(fittedModel = met_mod_outlier_test, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+## >> Results {.tabset}
+```{r}
+anova(met_mod_test, type = "III", ddf = "Kenward-Roger")
+
+met_emm <- emmeans(met_mod_test, ~ mito * nuclear * age)
+
+emmeans(met_mod_test, pairwise ~ age, adjust = "tukey")
+```
+
+### >>> Reaction norms
+```{r}
+sperm_met_norm <- emmeans(met_mod_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm metabolic rate, a2 (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  NULL
+
+sperm_met_norm
+```
+
+### >>> Raw data and means
+```{r}
+sperm_met_raw <- emmeans(met_mod_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
+  geom_jitter(data = sperm_met,
+              aes(y = p.a2, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              size = 0.75, alpha = .1) +
+  geom_jitter(data = sperm_met %>% 
+                group_by(LINE, age) %>% 
+                summarise(mn = mean(p.a2)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Sperm metabolic rate, a2 (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  coord_cartesian(ylim = c(0.14, 0.34)) +
+  facet_wrap(~ age) +
+  theme_bw() + 
+  theme() + 
+  ggrepel::geom_text_repel(data = sperm_met %>% filter(a2 > 50), aes(y = p.a2), label = "CA1, a2 = 0.55") + 
+  geom_text(data = sperm_met %>% group_by(mito, nuclear, age) %>% count(), aes(y = 0.14, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/sperm_met_raw.pdf', height = 4, width = 8, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+sperm_met_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+met_mod_coevo <- lmerTest::lmer(p.a2 ~ coevolved * age + (1 + age|LINE), 
+                                data = sperm_met %>% filter(a2 <= 30), REML = TRUE)
+
+anova(met_mod_coevo, type = "III", ddf = "Kenward-Roger")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+
+met_mod_outlier_rm_snp <- lmerTest::lmer(p.a2 ~ mito_snp * nuclear * age + (1 + age|LINE), 
+                                         data = sperm_met %>% filter(a2 <= 30))
+
+anova(met_mod_outlier_rm_snp, type = "III", ddf = "Kenward-Roger")
+
+```
+
+
+# > Sperm competition 
+We measured sperm defence (P1) and offence (P2) for focal males against a competitor brown eyed (`BW`) male for 15 males from each mitonuclear population. The data shows overdispersion, so we use male `ID` as an observation level random effect. Note that here, we only measured young (5 day old) males.
+
+## >> Sperm defence (P1) {.tabset}
+
+First we take a look at the data for each `Day` and `Block`, and see how P1 changes with copulation duration (`cop.dur`).
+
+### >>> Day and block effect
+```{r}
+defence %>% 
+  ggplot(aes(x = nuclear, y = P1, colour = mito)) +
+  geom_jitter(position = position_jitterdodge(dodge.width = .65, jitter.width = .15),
+              alpha = .5) +
+  labs(y = 'Sperm viability (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  stat_summary(position = position_dodge(width = 0.65)) +
+  facet_grid(Day ~ Block) +
+  NULL
+```
+
+### >>> Copulation duration
+```{r}
+defence %>% 
+  ggplot(aes(x = cop.dur, y = P1, colour = nuclear)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  facet_grid(Day ~ Block) +
+  NULL
+```
+
+##
+
+
+```{r}
+p1.mod1 <- glmer(cbind(RED, BW) ~ mito * nuclear + Day + cop.dur + (1 + cop.dur|LINE) + (1|ID) + (1|Block),
+                 data = defence, family = binomial, 
+                 control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=50000))
+                 )
+```
+
+### >>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(p1.mod1)
+performance::check_overdispersion(p1.mod1)
+```
+
+```{r}
+testDispersion(p1.mod1)
+simulationOutput <- simulateResiduals(fittedModel = p1.mod1, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+### >>> Results
+```{r}
+car::Anova(p1.mod1, type = "3")
+
+# posthoc tests
+bind_rows(emmeans(p1.mod1, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value),
+          emmeans(p1.mod1, pairwise ~ Day, adjust = "tukey")$contrasts %>% broom::tidy()) %>% 
+  mutate(p.val = ifelse(p.value < 0.001, '< 0.001', round(p.value, 3))) %>% 
+  select(-p.value, -term) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Nuclear", 1, 3) %>%
+  kableExtra::group_rows("Day", 4, 4)
+
+p1plot_raw <- emmeans(p1.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = defence,
+              aes(y = P1, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) + 
+  geom_jitter(data = defence %>% 
+                group_by(LINE) %>% 
+                summarise(mn = mean(P1)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = expression(P[1]*" (EMM ± 95% CIs)")) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = defence %>% 
+              group_by(mito, nuclear) %>% count(), aes(y = -0.04, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/p1plot_raw.pdf', height = 4, width = 5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+p1plot_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+
+p1.coevo <- glmer(cbind(RED, BW) ~ coevolved + Day + cop.dur + (1 + cop.dur|LINE) + (1|ID) + (1|Block),
+                 data = defence, family = binomial, 
+                 control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=50000))
+                 )
+
+car::Anova(p1.coevo, type = "3")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+
+p1.snp <- glmer(cbind(RED, BW) ~ mito_snp * nuclear + Day + cop.dur + (1 + cop.dur|LINE) + (1|ID) + (1|Block),
+                 data = defence, family = binomial, 
+                 control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=1e6)))
+
+car::Anova(p1.snp, type = "3")
+
+```
+
+## >> Sperm offence (P2)
+
+### >>> Check covariates {.tabset}
+#### >>>> Day and block effect
+```{r}
+offence %>% 
+  ggplot(aes(x = nuclear, y = P2, colour = mito)) +
+  geom_jitter(position = position_jitterdodge(dodge.width = .65, jitter.width = .15),
+              alpha = .5) +
+  labs(y = 'Sperm viability (EMM ± 95% CIs)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  stat_summary(position = position_dodge(width = 0.65)) +
+  facet_grid(Day ~ Block) +
+  NULL
+```
+
+#### >>>> Copulation duration
+```{r}
+offence %>% 
+  ggplot(aes(x = cop.dur, y = P2, colour = nuclear)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  facet_grid(Day ~ Block) +
+  NULL
+```
+
+
+### >>> {.tabset}
+```{r}
+p2.mod1 <- glmer(cbind(RED, BW) ~ mito * nuclear + Day + cop.dur + (1 + cop.dur|LINE) + (1|ID) + (1|Block),
+                 data = offence, family = binomial)
+```
+
+#### >>>> Check diagnostics
+```{r, fig.height=12}
+performance::check_model(p2.mod1)
+performance::check_overdispersion(p2.mod1)
+```
+
+
+```{r}
+testDispersion(p2.mod1)
+simulationOutput <- simulateResiduals(fittedModel = p2.mod1, plot = FALSE)
+hist(residuals(simulationOutput))
+hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))
+plot(simulationOutput)
+```
+
+
+```{r}
+car::Anova(p2.mod1, type = "3")
+
+
+# posthoc tests
+bind_rows(emmeans(p2.mod1, pairwise ~ mito, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value),
+          emmeans(p2.mod1, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% broom::tidy() %>%
+            rename(p.value = adj.p.value),
+          emmeans(p2.mod1, pairwise ~ Day, adjust = "tukey")$contrasts %>% broom::tidy()) %>% 
+  mutate(p.val = ifelse(p.value < 0.001, '< 0.001', round(p.value, 3))) %>% 
+  select(-p.value, -term) %>% 
+  kable(digits = 3, 
+        caption = 'Posthoc Tukey tests to compare which groups differ') %>% 
+  kable_styling(full_width = FALSE) %>%
+  kableExtra::group_rows("Mitochondria", 1, 3) %>%
+  kableExtra::group_rows("Nuclear", 4, 6) %>%
+  kableExtra::group_rows("Day", 7, 7)
+```
+
+
+```{r}
+p2plot_raw <- emmeans(p2.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_jitter(data = offence,
+              aes(y = P2, colour = mito),
+               position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .25) + 
+  geom_jitter(data = offence %>% 
+                group_by(LINE) %>% 
+                summarise(mn = mean(P2)) %>% 
+                separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+              aes(y = mn, colour = mito),
+              position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+              alpha = .85, size = 2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+                width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = expression(P[2]*" (EMM ± 95% CIs)")) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() + 
+  theme() + 
+  geom_text(data = defence %>% 
+              group_by(mito, nuclear) %>% count(), aes(y = -0.04, label = n), 
+            size = 2, position = position_dodge(width = .5)) + 
+  #ggsave('figures/p1plot_raw.pdf', height = 4, width = 5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+p2plot_raw
+
+```
+
+### >>> Matched vs. mismatched
+```{r}
+p2.coevo <- glmer(cbind(RED, BW) ~ coevolved + Day + cop.dur + (1|LINE) + (1|ID) + (1|Block),
+                 data = offence, family = binomial, 
+                 control= glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=50000)))
+
+car::Anova(p2.coevo, type = "3")
+
+```
+
+### >>> Mito-type analysis
+```{r}
+
+p2.snp <- glmer(cbind(RED, BW) ~ mito_snp * nuclear + Day + cop.dur + (1 + cop.dur|LINE) + (1|ID) + (1|Block),
+                 data = offence, family = binomial)
+
+car::Anova(p2.snp, type = "3")
+
+```
+
+##### Combined plot
+```{r}
+comb_spermcomp <- bind_rows(
+  emmeans(p1.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(trt = "P1"),
+  emmeans(p2.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(trt = "P2")) %>% 
+  ggplot(aes(x = nuclear, y = prob, fill = mito)) +
+  geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  labs(y = 'Proportion sired (EMM)') +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  facet_wrap(~trt) +
+  theme_bw() + 
+  theme() +
+  NULL
+
+comb_spermcomp
+
+```
+
+
+## >> Correlation of P1 vs P2 {.tabset}
+
+Finally, we tested whether there was a correlation between P1 and P2 using the model estimated marginal means for each genotype. We can visualise this either as the ranked means (1-9) or as a scatterplot.
+```{r}
+pdat <- bind_rows(emmeans(p1.mod1, ~ mito * nuclear) %>% as_tibble() %>% mutate(met = "P1"),
+                  emmeans(p2.mod1, ~ mito * nuclear) %>% as_tibble() %>% mutate(met = "P2")) %>% 
+  mutate(mt = rep(1:9, 2))
+
+```
+
+### >>> Ranked means
+```{r}
+pdat %>% 
+  group_by(met) %>% 
+  mutate(rank = dense_rank(desc(emmean))) %>% 
+  ggplot(aes(x = met, y = rank)) +
+  geom_point(size = 5, aes(shape = mito, colour = nuclear)) +
+  geom_line(aes(group = mt)) +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  scale_y_continuous(breaks = 1:9) +
+  theme_bw()
+
+```
+
+### >>> Scatterplot
+```{r}
+pdat.wide <- pdat %>% select(mito, nuclear, emmean, mt, met) %>% 
+  pivot_wider(names_from = met, values_from = emmean)
+
+pdat.wide %>% 
+  ggplot(aes(x = P1, y = P2)) +
+  geom_point(size = 5, aes(shape = mito, colour = nuclear)) +
+  ggpubr::stat_cor(method = "s") +
+  #geom_smooth(method = "lm", lty = 2, se = FALSE) +
+  labs(x = "logit(P1)", y = "logit(P2)") +
+  scale_colour_manual(values = met3) +
+  scale_fill_manual(values = met3) +
+  theme_bw() +
+  theme() +
+  #ggsave('figures/sperm_comp_cor.pdf', height = 4, width = 4.8, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+cor.test(pdat.wide$P1, pdat.wide$P2, method = "s")
+
+```
