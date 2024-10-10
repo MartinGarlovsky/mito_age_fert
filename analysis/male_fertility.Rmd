@@ -46,7 +46,7 @@ options(contrasts = c("contr.sum", "contr.poly"))
 #### Load data
 ```{r}
 # fecundity and hatching success
-male_fert_filt <- read.csv('data/male_fertility.csv') %>% 
+male_fert_filt <- read.csv('data/wrangled/male_fertility.csv') %>% 
   mutate(age = fct_relevel(age, c("young","old")),
          mito_snp = as.factor(mito_snp),
          coevolved = if_else(mito == nuclear, "matched", "mismatched"))
