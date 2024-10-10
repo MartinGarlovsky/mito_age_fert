@@ -1,0 +1,657 @@
+---
+title: "SNP_clusters"
+author: "MartinGarlovsky"
+date: "2023-03-02"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+### Load packages
+```{r}
+library(tidyverse)
+
+library(ComplexHeatmap)
+library(kableExtra)
+library(knitrhooks) # install with devtools::install_github("nathaneastwood/knitrhooks")
+library(showtext)
+# 
+# library(conflicted)
+
+select <- dplyr::select
+filter <- dplyr::filter
+
+output_max_height() # a knitrhook option
+
+options(stringsAsFactors = FALSE)
+
+# colour palettes
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#CC79A7", "#D55E00", "#0072B2", "#CC79A7")
+v.pal <- viridis::viridis(n = 3, direction = -1)
+
+```
+
+## Load data
+```{r}
+snp_dat <- read.csv('data/rawdata_PCA.csv') %>% 
+  select(mito, nuclear, mtn, mtgrp, LINE = line, ND2_1154:ND1_12132) %>% 
+  distinct(LINE, .keep_all = TRUE) %>% 
+  mutate(across(ND2_1154:ND1_12132, ~ as.numeric(as.factor(.x)) - 1))
+
+colnames(snp_dat)[6:39]
+
+loc_info <- data.frame(coln = colnames(snp_dat)[6:39]) %>% 
+  separate(coln, into = c("gene", "position"), remove = FALSE)
+
+loc_info[10, 2] <- "tRNA_Glu"
+loc_info[10, 3] <- "6308"
+
+snp_new <- read.csv('data/mito_34sigdiffSNPs_consensus_incl_colnames.csv', header = TRUE) %>% 
+  separate(LINE, into = c("mito", "nuclear"), sep = "(?<=.)", remove = FALSE) %>% 
+  mutate(mtn = paste0(mito, nuclear))
+
+cnames <- data.frame(position = gsub("X", "", colnames(snp_new)[4:37])) %>% 
+  left_join(loc_info, by = "position")
+
+colnames(snp_new)[4:37] <- cnames$coln
+
+snp_num <- snp_new %>% mutate(across(ND2_1154:Ori_19482, ~ as.numeric(as.factor(.x)) - 1))
+
+# gene info
+snp_gene <- read.delim("data/snp-gene.txt")
+
+colnames(snp_num[4:37]) %>% as_tibble() %>% 
+  left_join(snp_gene %>% mutate(position = as.character(position)), 
+            by = c("value" = "position"))
+
+```
+
+# mito-SNP PCA
+Using the SNP information from Vaught et al. to identify clusters of SNPs differentiating between lines. We recoded SNPS with an arbitrary binary unit and used PCA to identify meaningful groups...
+```{r}
+# snp_dat <- femfert %>% 
+#   select(mito, nuclear, mtn, mtgrp, LINE, ND2_1154:ND1_12132) %>% 
+#   distinct(LINE, .keep_all = TRUE) %>% 
+#   mutate(across(ND2_1154:ND1_12132, ~ as.numeric(as.factor(.x)) - 1)) #%>% 
+#   # remove SNPs with intermediate frequencies (coded AT) 
+#   #select(-Ori_15234, -Ori_15243)
+
+mito_labs <- rowAnnotation(mito = snp_dat$mito,
+                           mtgp = snp_dat$mtgrp,
+                           nucl = snp_dat$nuclear,
+                           LINE = snp_dat$LINE,
+                           col = list(mito = setNames(v.pal, unique(snp_dat$mito)),
+                                      mtgp = setNames(rainbow(9), unique(snp_dat$mtgrp)),
+                                      nucl = setNames(v.pal, unique(snp_dat$nuclear)),
+                                      LINE = setNames(rainbow(27), unique(snp_dat$LINE))),
+                           title = NULL
+                           )
+
+mito_labs <- rowAnnotation(mito = snp_new$mito,
+                           nucl = snp_new$nuclear,
+                           LINE = snp_new$LINE,
+                           col = list(mito = setNames(v.pal, unique(snp_new$mito)),
+                                      nucl = setNames(v.pal, unique(snp_new$nuclear)),
+                                      LINE = setNames(rainbow(27), unique(snp_new$LINE))),
+                           title = NULL
+                           )
+
+#pdf('figures/SNP_heatmap.pdf', height = 8, width = 5)
+Heatmap(as.matrix(snp_new %>% select(ND2_1154:Ori_19482)), 
+        #col = c('black', 'grey'),
+        heatmap_legend_param = list(title = "SNP"),
+        left_annotation = mito_labs,
+        #top_annotation = haha, 
+        show_row_names = FALSE, 
+        show_column_names = FALSE,
+        #row_split = 2, 
+        #column_split = 3,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL)
+#dev.off()
+
+pca.cor <- prcomp(snp_num %>% select(ND2_1154:Ori_19482))
+
+broom::tidy(pca.cor, 'pcs') %>% 
+  mutate(percent = percent * 100, cumulative = cumulative * 100)
+
+# biplot(pca.cor)
+# biplot(pca.cov)
+
+# screeplot(pca.cor)
+# screeplot(pca.cov)
+
+PCA_dat <- broom::augment(pca.cor, data = snp_num)
+
+PCA_dat %>%
+  ggplot(aes(x = .fittedPC1, y = .fittedPC2, colour = mtn)) +
+  geom_point(size = 8, alpha = .5) +
+  scale_colour_viridis_d() +
+  labs(x = paste0('PC1 (', (100*round(summary(pca.cor)$importance[2, 1], 3)), '%)'),
+       y = paste0('PC2 (', (100*round(summary(pca.cor)$importance[2, 2], 3)), '%)')) +
+  theme_bw() +
+  theme(legend.position = '',
+        legend.text.align = 0,
+        legend.text = element_text(size = 12),
+        legend.background = element_blank(),
+        axis.text = element_text(size = 10)) +
+  ggrepel::geom_text_repel(aes(label = LINE), colour = 'black', max.overlaps = 20) +
+  #ggsave('plots/PCA_12.pdf', height = 3.4, width = 4.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+bind_rows(PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC2),
+          PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC3),
+          PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC2, PCb = .fittedPC3)) %>% 
+  mutate(pc = rep(c('PC1 (81.2%) vs. PC2 (8.6%)',
+                    'PC1 (81.2%) vs. PC3 (3.1%)',
+                    'PC2 (8.6%) vs. PC3 (3.1%)'), each = nrow(.)/3)) %>%
+  ggplot(aes(x = PCa, y = PCb, colour = mito)) +
+  geom_point(size = 8, alpha = .5) +
+  scale_colour_viridis_d() +
+  facet_wrap(~pc) +
+  theme_bw() +
+  theme(legend.position = '',
+        legend.text.align = 0,
+        legend.text = element_text(size = 12),
+        legend.background = element_blank(),
+        axis.text = element_text(size = 10),
+        axis.title = element_blank(),
+        strip.text = element_text(size = 15)) +
+  ggrepel::geom_text_repel(aes(label = LINE), colour = 'black', max.overlaps = 20) +
+  #ggsave('plots/PCA_12.pdf', height = 3.4, width = 4.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+# which SNPs are contributing most to differences in PCs?
+data.frame(pca.cor$rotation) %>% rownames_to_column(var = "gene") %>% 
+  ggplot(aes(x = gene, y = PC1)) +
+  geom_point() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# library(factoextra)
+# library(cluster)
+# 
+# fviz_nbclust(snp_dat %>% select(ND2_1154:ND1_12132), FUN = hcut)
+# fviz_nbclust(snp_dat %>% select(ND2_1154:ND1_12132), FUN = hcut, method = "wss")
+# fviz_nbclust(snp_dat %>% select(ND2_1154:ND1_12132), FUN = hcut, method = "silhouette")
+# 
+# fviz_nbclust(snp_dat %>% select(ND2_1154:ND1_12132), kmeans, nstart = 25, k.max = 9,
+#              method = "gap_stat", nboot = 1000) +
+#   labs(subtitle = "Gap statistic method")
+
+# Dissimilarity matrix
+d <- dist(snp_num %>% select(contains("_")), method = "euclidean")
+
+# Hierarchical clustering using Complete Linkage
+hc1 <- hclust(d, method = "complete")
+
+# Plot the obtained dendrogram
+#plot(hc1, cex = 0.6, hang = -1)
+
+# Cut tree into 2 groups
+mito_cluster <- cutree(hc1, k = 2)
+
+# Number of members in each cluster
+table(mito_cluster)
+
+# or... manually based on observing PCs...
+snp_dat2 <- snp_new %>% 
+  mutate(mito2 = case_when(grepl("B", x = mito) ~ "b_like",
+                           LINE == "CA1"| LINE == "CA3" ~ "b_like",
+                           grepl("C", x = mito) ~ "c_like",
+                           LINE == "AA3" ~ "c_like",
+                           TRUE ~ "a_like"))
+
+mito_labs2 <- rowAnnotation(mito = snp_new$mito,
+                            #mtgp = snp_dat$mtgrp,
+                            nucl = snp_new$nuclear,
+                            mtcl = snp_dat2$mito2,
+                            col = list(mito = setNames(rev(v.pal), unique(snp_new$mito)),
+                                       #mtgp = setNames(rainbow(9), unique(snp_dat$mtgrp)),
+                                       nucl = setNames(rev(v.pal), unique(snp_new$nuclear)),
+                                       mtcl = setNames(rainbow(3), unique(snp_dat2$mito2))),
+                            title = NULL
+                            )
+
+#pdf('figures/SNP_heatmap2.pdf', height = 8, width = 5)
+Heatmap(as.matrix(snp_num %>% select(ND2_1154:Ori_19482)), 
+        col = c('black', 'grey'),
+        heatmap_legend_param = list(title = "SNP"),
+        left_annotation = mito_labs2,
+        #top_annotation = haha, 
+        show_row_names = FALSE, 
+        show_column_names = FALSE,
+        row_split = 2, 
+        #column_split = 3,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL)
+#dev.off()
+
+# Heatmap(as.matrix(snp_dat %>% select(ND2_1154:ND1_12132)), 
+#         col = cbPalette[4:8],
+#         heatmap_legend_param = list(title = "SNP"),
+#         left_annotation = mito_labs2,
+#         #top_annotation = haha, 
+#         show_row_names = FALSE, 
+#         show_column_names = FALSE,
+#         row_split = 2, 
+#         #column_split = 3,
+#         column_gap = unit(0, "mm"),
+#         row_title = NULL,
+#         column_title = NULL,
+#         cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+#         grid.text(mat_snps[i, j], x, y)})
+
+# SNP graph
+snpd2 <- read.csv('data/rawdata_PCA.csv') %>% 
+  select(mito, nuclear, mtn, mtgrp, LINE = line, ND2_1154:ND1_12132) %>% 
+  distinct(LINE, .keep_all = TRUE)
+
+mat_snps <- as.matrix(snpd2 %>% select(ND2_1154:ND1_12132))
+
+
+mat_snps <- as.matrix(snp_dat2 %>% select(ND2_1154:Ori_19482))
+
+#pdf('figures/SNP_map.pdf', height = 5.5, width = 8)
+Heatmap(as.matrix(snp_new %>% select(ND2_1154:Ori_19482)), 
+        col = cbPalette[4:7], # col = c(cbPalette[4], cbPalette[1], cbPalette[5:7]), # to plot old version
+        heatmap_legend_param = list(title = "SNP"),
+        row_order = order(snp_dat2$mito2),
+        left_annotation = mito_labs2,
+        #top_annotation = haha, 
+        show_row_names = FALSE, 
+        #show_column_names = FALSE,
+        #row_split = 2, 
+        #column_split = 3,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL,
+        cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+        grid.text(mat_snps[i, j], x, y)
+    })
+#dev.off()
+
+snp_new$LnRNA_13934
+snpd2$LnRNA_13934
+
+data.frame(LINE = snpd2$LINE,
+           LnRNA_13934 = snpd2$LnRNA_13934) %>% 
+  left_join(data.frame(LINE = snp_new$LINE,
+                       LnRNA_13934 = snp_new$LnRNA_13934),
+            by = "LINE")
+
+```
+
+# new analysis
+```{r}
+
+snp_susi <- read.csv('data/mito_mt_seq_major_alleles_sig_snptable.csv', header = TRUE)
+
+colnames(snp_susi)[1] <- "LINE"
+colnames(snp_susi)[2:45] <- gsub("X", "", x = colnames(snp_susi)[2:45])
+
+snp_susi <- snp_susi %>% 
+  separate(LINE, into = c("mito", "nuclear"), sep = "(?<=.)", remove = FALSE) %>% 
+  mutate(mtn = paste0(mito, nuclear))
+
+snp_num <- snp_susi %>% mutate(across(`1154`:`17400`, ~ as.numeric(as.factor(.x)) - 1))
+
+
+mito_labs <- rowAnnotation(mito = snp_susi$mito,
+                           nucl = snp_susi$nuclear,
+                           LINE = snp_susi$LINE,
+                           col = list(mito = setNames(rev(v.pal), unique(snp_susi$mito)),
+                                      nucl = setNames(rev(v.pal), unique(snp_susi$nuclear)),
+                                      LINE = setNames(rainbow(27), unique(snp_susi$LINE))),
+                           title = NULL
+                           )
+
+#pdf('figures/SNP_heatmap.pdf', height = 8, width = 5)
+Heatmap(as.matrix(snp_susi %>% select(`1154`:`17400`)), 
+        #col = c('black', 'grey'),
+        heatmap_legend_param = list(title = "SNP"),
+        left_annotation = mito_labs,
+        show_row_names = FALSE, 
+        show_column_names = FALSE,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL)
+#dev.off()
+
+pca.cor <- prcomp(snp_num %>% select(`1154`:`17400`))
+
+broom::tidy(pca.cor, 'pcs') %>% 
+  mutate(percent = percent * 100, cumulative = cumulative * 100)
+
+# biplot(pca.cor)
+# biplot(pca.cov)
+
+# screeplot(pca.cor)
+# screeplot(pca.cov)
+
+PCA_dat <- broom::augment(pca.cor, data = snp_num)
+
+PCA_dat %>%
+  ggplot(aes(x = .fittedPC1, y = .fittedPC2, fill = mtn)) +
+  geom_point(size = 8, alpha = .5, pch = 21) +
+  scale_fill_viridis_d() +
+  labs(x = paste0('PC1 (', (100*round(summary(pca.cor)$importance[2, 1], 3)), '%)'),
+       y = paste0('PC2 (', (100*round(summary(pca.cor)$importance[2, 2], 3)), '%)')) +
+  coord_cartesian(ylim = c(-1, 1)) +
+  theme_bw() +
+  theme(legend.position = '',
+        legend.text.align = 0,
+        legend.text = element_text(size = 12),
+        legend.background = element_blank(),
+        axis.text = element_text(size = 10)) +
+  ggrepel::geom_text_repel(aes(label = LINE), colour = 'black', max.overlaps = 20) +
+  #ggsave('plots/PCA_12.pdf', height = 3.4, width = 4.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+
+bind_rows(PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC2),
+          PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC3),
+          PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC2, PCb = .fittedPC3)) %>% 
+  mutate(pc = rep(c('PC1 (77.3%) vs. PC2 (9.85%)',
+                    'PC1 (77.3%) vs. PC3 (5.94%)',
+                    'PC2 (9.85%) vs. PC3 (5.94%)'), each = nrow(.)/3)) %>%
+  ggplot(aes(x = PCa, y = PCb, colour = mito)) +
+  geom_point(size = 8, alpha = .5) +
+  scale_colour_viridis_d() +
+  coord_cartesian(ylim = c(-1, 1)) +
+  facet_wrap(~pc) +
+  theme_bw() +
+  theme(legend.position = '',
+        legend.text.align = 0,
+        legend.text = element_text(size = 12),
+        legend.background = element_blank(),
+        axis.text = element_text(size = 10),
+        axis.title = element_blank(),
+        strip.text = element_text(size = 15)) +
+  ggrepel::geom_text_repel(aes(label = LINE), colour = 'black', max.overlaps = 20) +
+  #ggsave('plots/PCA_12.pdf', height = 3.4, width = 4.5, dpi = 600, useDingbats = FALSE) +
+  NULL
+
+# which SNPs are contributing most to differences in PCs?
+data.frame(pca.cor$rotation) %>% rownames_to_column(var = "gene") %>% 
+  ggplot(aes(x = gene, y = PC1)) +
+  geom_point() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+library(factoextra)
+library(cluster)
+
+fviz_nbclust(snp_num %>% select(`1154`:`17400`), FUN = hcut)
+fviz_nbclust(snp_num %>% select(`1154`:`17400`), FUN = hcut, method = "wss")
+fviz_nbclust(snp_num %>% select(`1154`:`17400`), FUN = hcut, method = "silhouette")
+
+# fviz_nbclust(snp_num %>% select(`1154`:`17400`), kmeans, nstart = 25, k.max = 9,
+#              method = "gap_stat", nboot = 1000) +
+#   labs(subtitle = "Gap statistic method")
+
+# Dissimilarity matrix
+d <- dist(snp_num %>% select(`1154`:`17400`), method = "euclidean")
+
+# Hierarchical clustering using Complete Linkage
+hc1 <- hclust(d, method = "complete")
+
+# Plot the obtained dendrogram
+#plot(hc1, cex = 0.6, hang = -1)
+
+# Cut tree into 2 groups
+mito_cluster <- cutree(hc1, k = 9)
+
+# Number of members in each cluster
+table(mito_cluster)
+
+data.frame(LINE = snp_susi$LINE,
+           mito_cluster)
+
+# or... manually based on observing PCs...
+snp_dat2 <- snp_susi %>% 
+  mutate(mito2 = case_when(grepl("B", x = mito) ~ "b_like",
+                           LINE == "CA1"| LINE == "CA3" ~ "b_like",
+                           grepl("C", x = mito) ~ "c_like",
+                           LINE == "AA3" ~ "AA3",
+                           TRUE ~ "a_like"),
+         mito_snp = mito_cluster)
+
+#snp_dat2 %>% write_csv("output/SNP_clusters.csv")
+
+#snp_dat2 <- snp_dat2 %>% arrange(nuclear, )
+
+snp_annot <- read.csv("data/mito_mt_seq_sig_annotated.csv")
+
+Archambault.pal <- MetBrewer::met.brewer('Archambault')
+
+vmha <- HeatmapAnnotation(gene = snp_annot$gene, 
+                          substitution = snp_annot$substitution,
+                          # anno_block(gp = gpar(fill = viridis::viridis(n = 15, option = "H")),
+                          #            labels = snp_annot$gene, 
+                          #            labels_gp = gpar(col = "white", fontsize = 10)),
+                          col = list(gene = setNames(viridis::viridis(n = 15, option = "H"),
+                                                       unique(snp_annot$gene)),
+                                     substitution = setNames(c(Archambault.pal[c(1, 4, 7)]),
+                                                       unique(snp_annot$substitution))))
+
+mat_snps <- as.matrix(snp_dat2 %>% select(`1154`:`17400`))
+
+mito_labs2 <- rowAnnotation(msnp = snp_dat2$mito_snp,
+                            mito = snp_dat2$mito,
+                            nucl = snp_dat2$nuclear,
+                            #mtcl = snp_dat2$mito2,
+                            col = list(mito = setNames(v.pal, unique(snp_dat2$mito)),
+                                       msnp = setNames(viridis::viridis(n = 9, option = "H"),
+                                                       unique(snp_dat2$mito_snp)),
+                                       nucl = setNames(v.pal, unique(snp_dat2$nuclear)),
+                                       mtcl = setNames(rainbow(4), unique(snp_dat2$mito2))),
+                            title = NULL
+                            )
+
+snp_mat_n <- as.matrix(snp_num %>% select(`1154`:`17400`))
+rownames(snp_mat_n) <- snp_num$LINE
+
+#pdf('figures/SNP_tree_may.pdf', height = 5.5, width = 12)
+Heatmap(snp_mat_n, 
+        col = c('grey50', 'grey'),
+        heatmap_legend_param = list(title = "SNP"),
+        left_annotation = mito_labs2,
+        top_annotation = vmha, 
+        show_row_names = TRUE, 
+        show_column_names = TRUE,
+        #row_split = 2, 
+        #column_split = 3,
+        cluster_columns = FALSE,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL,
+        cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+          grid.text(mat_snps[i, j], x, y)
+          }
+)
+#dev.off()
+
+
+
+snp_mat_numbs <- matrix(as.numeric(as.factor(as.matrix(snp_susi %>% select(`1154`:`17400`)))), ncol = 44)
+colnames(snp_mat_numbs) <- colnames(snp_susi %>% select(`1154`:`17400`))
+rownames(snp_mat_numbs) <- snp_susi$LINE
+
+Heatmap(snp_mat_numbs, 
+        col = cbPalette[4:7], 
+        heatmap_legend_param = list(title = "SNP"),
+        row_order = order(snp_dat2$mito_snp),
+        left_annotation = mito_labs2,
+        top_annotation = vmha, 
+        show_row_names = TRUE, 
+        #show_column_names = FALSE,
+        #row_split = 2, 
+        #column_split = 3,
+        cluster_columns = FALSE,
+        column_gap = unit(0, "mm"),
+        rect_gp = gpar(col = "white", lwd = 2),
+        row_title = NULL,
+        column_title = NULL,
+        cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+          grid.text(mat_snps[i, j], x, y)
+          }
+        )
+
+
+
+HeatmapAnnotation(foo = anno_block(gp = gpar(fill = 2:4),
+                                   labels = c("group1", "group2", "group3"), 
+                                   labels_gp = gpar(col = "white", fontsize = 10)))
+
+
+snp_matrix <- as.matrix(snp_susi %>% select(`1154`:`17400`))
+rownames(snp_matrix) <- snp_susi$LINE
+
+#pdf('figures/SNP_map_May.pdf', height = 5.5, width = 12)
+Heatmap(snp_matrix, 
+        col = cbPalette[4:7], # col = c(cbPalette[4], cbPalette[1], cbPalette[5:7]), # to plot old version
+        heatmap_legend_param = list(title = "SNP"),
+        #row_order = order(snp_dat2$mito_snp),
+        left_annotation = mito_labs2,
+        top_annotation = vmha, 
+        show_row_names = TRUE, 
+        #show_column_names = FALSE,
+        #row_split = 2, 
+        #column_split = 3,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL,
+        cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+          grid.text(mat_snps[i, j], x, y)
+          }
+        )
+#dev.off()
+
+
+# bind_rows(PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC2),
+#           PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC1, PCb = .fittedPC3),
+#           PCA_dat %>% select(mito, nuclear, LINE, PCa = .fittedPC2, PCb = .fittedPC3)) %>% 
+#   mutate(pc = rep(c('PC1 (77.3%) vs. PC2 (9.85%)',
+#                     'PC1 (77.3%) vs. PC3 (5.94%)',
+#                     'PC2 (9.85%) vs. PC3 (5.94%)'), each = nrow(.)/3)) %>% 
+#   left_join(snp_dat2 %>% select(LINE, mito2, mito_cluster)) %>% 
+#   mutate(mito_cluster = as.factor(mito_cluster)) %>%
+#   ggplot(aes(x = PCa, y = PCb, colour = mito_cluster)) +
+#   geom_point(size = 8, alpha = .5) +
+#   scale_colour_viridis_d(option = "H") +
+#   scale_fill_viridis_d(option = "H") +
+#   coord_cartesian(ylim = c(-.78, .75)) +
+#   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+#   facet_wrap(~pc) +
+#   theme_bw() +
+#   theme(#legend.position = '',
+#         legend.text.align = 0,
+#         legend.text = element_text(size = 12),
+#         legend.background = element_blank(),
+#         axis.text = element_text(size = 10),
+#         axis.title = element_blank(),
+#         strip.text = element_text(size = 15)) +
+#   ggrepel::geom_text_repel(aes(label = LINE), colour = 'black', max.overlaps = 20) +
+#   #ggsave('plots/PCA_12.pdf', height = 3.4, width = 4.5, dpi = 600, useDingbats = FALSE) +
+#   NULL
+
+```
+
+# haplomap
+```{r}
+
+library(geneHapR)
+
+snp_t <- data.frame(t(snp_susi[, 4:47])) %>% 
+  rownames_to_column(var = "POS")
+
+colnames(snp_t)[2:28] <- snp_susi$LINE
+
+hapdat <- bind_cols(CHROM = "X",
+                    POS = as.numeric(snp_t[, 1]), 
+                    REF = t(apply(snp_t[, 2:28], 1, unique))[, 1],
+                    ALT = t(apply(snp_t[, 2:28], 1, unique))[, 2],
+                    INFO = paste0("CDS=", 
+                                  t(apply(snp_t[, 2:28], 1, unique))[, 1], 
+                                  ">",
+                                  t(apply(snp_t[, 2:28], 1, unique))[, 2]),
+                    snp_t[, 2:28])
+
+hapResult <- table2hap(hapdat)
+
+hapSummary <- hap_summary(hapResult)
+hapSummary
+
+plotHapTable(hapSummary, 
+             angle = 45,
+             INFO_tag = "CDSChange")
+
+hapNet <- get_hapNet(hapSummary,
+                     AccINFO = AccINFO,
+                     groupName = "Type")
+
+plotHapNet(hapNet,
+           size = "freq",                   # circle size
+           scale = "log2",                 # scale circle with 'log10(size + 1)'
+           cex = 0.8,                       # size of hap symbol
+           col.link = 1,                    # link colors
+           link.width = 1,                  # link widths
+           show.mutation = 2,               # mutation types one of c(0,1,2,3)
+           legend = FALSE#c(-12.5, 7)
+           )
+
+```
+
+# figure designations!?
+```{r}
+
+plot_snp <- data.frame(LINE = snp_dat2$LINE,
+           mito_snp = c("1", "1", "3", 
+                        "1", "1", "2",
+                        "1", "2", "1",
+                        "7", "8", "8",
+                        "8", "7", "8",
+                        "9", "9", "9", 
+                        "9", "5", "8",
+                        "6", "4", "4",
+                        "4", "5", "4")) #%>% write_csv("output/SNP_clusters.csv")
+
+plot_snp
+
+snp_susi$LINE == plot_snp$LINE
+
+mito_again <- rowAnnotation(mito = snp_susi$mito,
+                            nucl = snp_susi$nuclear,
+                            mtgp = plot_snp$mito_snp,
+                            mtcl = snp_dat2$mito2,
+                            col = list(mito = setNames(rev(v.pal), unique(snp_susi$mito)),
+                                       mtgp = setNames(viridis::viridis(n = 9, option = "H")[as.numeric(noquote(unique(plot_snp$mito_snp)))],
+                                                       unique(plot_snp$mito_snp)),
+                                       nucl = setNames(rev(v.pal), unique(snp_susi$nuclear)),
+                                       mtcl = setNames(rainbow(4), unique(snp_dat2$mito2))),
+                            title = NULL
+                            )
+
+#pdf('figures/SNP_map_correct_ordered.pdf', height = 5.5, width = 8)
+Heatmap(as.matrix(snp_susi %>% select(`1154`:`17400`)), 
+        col = cbPalette[4:7], # col = c(cbPalette[4], cbPalette[1], cbPalette[5:7]), # to plot old version
+        heatmap_legend_param = list(title = "SNP"),
+        row_order = order(plot_snp$mito_snp),
+        left_annotation = mito_again,
+        #top_annotation = haha, 
+        show_row_names = FALSE, 
+        #show_column_names = FALSE,
+        #row_split = 2, 
+        #column_split = 3,
+        column_gap = unit(0, "mm"),
+        row_title = NULL,
+        column_title = NULL,
+        cell_fun = function(j, i, x, y, w, h, col) { # add text to each grid
+        grid.text(mat_snps[i, j], x, y)
+    })
+#dev.off()
+
+```
