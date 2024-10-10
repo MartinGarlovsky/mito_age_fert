@@ -15,7 +15,7 @@
 
 <title>Male fertility</title>
 
-<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -404,7 +404,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-09
+<strong>Last updated:</strong> 2024-10-10
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -535,15 +535,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree5f3a2a779b4c33bc095c87db989cc0cbbaf8bbf8targetblank5f3a2a7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttreedfaa300cb220b51e4272d71963c3bb006af8afd3targetblankdfaa300a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/5f3a2a779b4c33bc095c87db989cc0cbbaf8bbf8" target="_blank">5f3a2a7</a>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/dfaa300cb220b51e4272d71963c3bb006af8afd3" target="_blank">dfaa300</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree5f3a2a779b4c33bc095c87db989cc0cbbaf8bbf8targetblank5f3a2a7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttreedfaa300cb220b51e4272d71963c3bb006af8afd3targetblankdfaa300a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -553,7 +553,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/5f3a2a779b4c33bc095c87db989cc0cbbaf8bbf8" target="_blank">5f3a2a7</a>.
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/dfaa300cb220b51e4272d71963c3bb006af8afd3" target="_blank">dfaa300</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -571,12 +571,11 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
+    Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
 
 Untracked files:
     Untracked:  README.html
-    Untracked:  analysis/SNP_clusters.Rmd
     Untracked:  check_lines.R
     Untracked:  code/data_wrangling.R
     Untracked:  code/plotting_Script.R
@@ -610,8 +609,7 @@ Untracked files:
     Untracked:  snp_matrix_dobler.csv
 
 Unstaged changes:
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/sperm_comp.Rmd
+    Deleted:    analysis/sperm_comp.Rmd
     Modified:   data/README.md
 
 </code></pre>
@@ -658,6 +656,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/dfaa300cb220b51e4272d71963c3bb006af8afd3/analysis/male_fertility.Rmd" target="_blank">dfaa300</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+<td>
+wflow_publish("analysis/male_fertility.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/MartinGarlovsky/mito_age_fert/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/male_fertility.html" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -712,7 +744,7 @@ options(contrasts = c(&quot;contr.sum&quot;, &quot;contr.poly&quot;))</code></pr
 <div id="load-data" class="section level4">
 <h4>Load data</h4>
 <pre class="r"><code># fecundity and hatching success
-male_fert_filt &lt;- read.csv(&#39;data/male_fertility.csv&#39;) %&gt;% 
+male_fert_filt &lt;- read.csv(&#39;data/wrangled/male_fertility.csv&#39;) %&gt;% 
   mutate(age = fct_relevel(age, c(&quot;young&quot;,&quot;old&quot;)),
          mito_snp = as.factor(mito_snp),
          coevolved = if_else(mito == nuclear, &quot;matched&quot;, &quot;mismatched&quot;))
@@ -770,8 +802,82 @@ offence &lt;- read.csv(&quot;data/wrangled/sperm_offence.csv&quot;, header = TRU
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-3-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(male_fert_filt$total_eggs, breaks = 50)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-2">
+Past versions of unnamed-chunk-3-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-3-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># fit linear model - model diagnostics look better?
 male_fec_test &lt;- lmerTest::lmer(total_eggs ~ mito * nuclear * age + (1|LINE:age), 
                                 data = male_fert_filt, REML = TRUE) 
@@ -2508,6 +2614,43 @@ male_fecundity_norm &lt;- emmeans(male_fec_test, ~ mito * nuclear * age) %&gt;% 
 
 male_fecundity_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-4-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data" class="section level4">
 <h4>&gt;&gt;&gt;&gt; Raw data</h4>
@@ -2540,6 +2683,43 @@ male_fecundity_norm</code></pre>
 
 male_fecundity_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-5-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="matched-vs.-mismatched" class="section level3">
@@ -2883,6 +3063,43 @@ male_fecundity_snp &lt;- fec_emm_snp %&gt;% as_tibble() %&gt;% drop_na() %&gt;%
 
 male_fecundity_snp</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-7-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="hatching-success" class="section level1">
@@ -2914,6 +3131,43 @@ separately.</p>
   #ggsave(&#39;figures/male_hatchingsuccess_all.pdf&#39;, height = 4, width = 9, dpi = 600, useDingbats = FALSE) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-8-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#xtabs(~ mtn + age, data = male_fert_filt)</code></pre>
 <div id="young-males" class="section level3 tabset">
 <h3 class="tabset">&gt;&gt;&gt; Young males</h3>
@@ -2926,6 +3180,43 @@ hatch2 &lt;- glmer(cbind(total_offs, total_fail) ~ mito * nuclear + (1|LINE) + (
 <h4>&gt;&gt;&gt;&gt; Check model diagnostics</h4>
 <pre class="r"><code>performance::check_model(hatch2)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-10-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(hatch2)</code></pre>
 <pre># Overdispersion test
 
@@ -2933,7 +3224,44 @@ hatch2 &lt;- glmer(cbind(total_offs, total_fail) ~ mito * nuclear + (1|LINE) + (
           p-value = 0.688
 </pre>
 <pre class="r"><code>testDispersion(hatch2)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-11-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -2945,10 +3273,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = hatch2, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-2">
+Past versions of unnamed-chunk-11-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-11-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)), breaks = 50)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-3">
+Past versions of unnamed-chunk-11-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-11-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-4">
+Past versions of unnamed-chunk-11-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-11-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="results-1" class="section level3 tabset">
@@ -3150,6 +3589,43 @@ hatchingsuccess_young_norm &lt;- emmeans(hatch2, ~ mito * nuclear, type = &#39;r
 
 hatchingsuccess_young_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-13-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data-with-means" class="section level4">
 <h4>&gt;&gt;&gt;&gt; Raw data with means</h4>
@@ -3182,6 +3658,43 @@ hatchingsuccess_young_norm</code></pre>
 
 hatchingsuccess_young_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-14-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="matched-vs.-mismatched-1" class="section level3">
@@ -3192,6 +3705,43 @@ hatchingsuccess_young_raw</code></pre>
 
 performance::check_model(hatch_young_coevo)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-15-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>car::Anova(hatch_young_coevo, type = &quot;3&quot;) %&gt;% broom::tidy() %&gt;% 
   as_tibble() %&gt;% 
   kable(digits = 3, 
@@ -3258,6 +3808,43 @@ coevolved
 
 performance::check_model(young_fert_snp)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-16-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>car::Anova(young_fert_snp, type = &quot;3&quot;) %&gt;% broom::tidy() %&gt;% 
   as_tibble() %&gt;% 
   kable(digits = 3, 
@@ -3363,6 +3950,43 @@ male_sterilty %&gt;%
   labs(y = &quot;Proportion of males&quot;) +
   facet_grid(mito ~ age)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-17-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># model old males only
 ster_md &lt;- glmer(sterilbin ~ mito * nuclear + (1|LINE), family = &#39;binomial&#39;, 
                  data = male_sterilty %&gt;% filter(age == &quot;old&quot;))
@@ -3372,6 +3996,43 @@ ster_md &lt;- glmer(sterilbin ~ mito * nuclear + (1|LINE), family = &#39;binomia
 <h4>&gt;&gt;&gt;&gt; Check diagnostics</h4>
 <pre class="r"><code>performance::check_model(ster_md)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-18-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(ster_md)</code></pre>
 <pre># Overdispersion test
 
@@ -3576,6 +4237,43 @@ hatchingsuccess_old_norm &lt;- emmeans(ster_emm, ~ mito * nuclear, type = &#39;r
 
 hatchingsuccess_old_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-20-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data-and-means" class="section level5">
 <h5>&gt;&gt;&gt;&gt;&gt; Raw data and means</h5>
@@ -3608,6 +4306,43 @@ hatchingsuccess_old_norm</code></pre>
 
 hatchingsuccess_old_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-21-1">
+Past versions of unnamed-chunk-21-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-21-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-21-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3784,6 +4519,43 @@ mito_snp:nuclear
 
 comb_fert</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-24-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -3829,6 +4601,43 @@ the model.</p>
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-25-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="control-treatment-t0" class="section level2 tabset">
 <h2 class="tabset">&gt;&gt;&gt; Control treatment (t0)</h2>
 <p>First we take a look at the data to see how response changes with the
@@ -3859,6 +4668,43 @@ spvfilt_control %&gt;%
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-26-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="block-effect" class="section level3">
 <h3>&gt;&gt;&gt;&gt; Block effect</h3>
@@ -3884,6 +4730,43 @@ spvfilt_control %&gt;%
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-27-1">
+Past versions of unnamed-chunk-27-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-27-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-27-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="results-3" class="section level2 tabset">
@@ -3895,6 +4778,43 @@ spvfilt_control %&gt;%
 <h3>&gt;&gt;&gt;&gt; Check diagnostics</h3>
 <pre class="r"><code>performance::check_model(viability_m1)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-29-1">
+Past versions of unnamed-chunk-29-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-29-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-29-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(viability_m1)</code></pre>
 <pre># Overdispersion test
 
@@ -3903,7 +4823,44 @@ spvfilt_control %&gt;%
 </pre>
 <pre class="r"><code># diagnostics
 testDispersion(viability_m1)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-1">
+Past versions of unnamed-chunk-30-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-30-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-30-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -3915,10 +4872,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = viability_m1, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-30-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-2">
+Past versions of unnamed-chunk-30-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-30-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-30-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-30-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-3">
+Past versions of unnamed-chunk-30-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-30-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-30-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-30-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-4">
+Past versions of unnamed-chunk-30-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-30-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-30-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="section" class="section level3">
 <h3>&gt;&gt;&gt;&gt;</h3>
@@ -4438,6 +5506,43 @@ Inf
 
 sperm_vib_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-32-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data-and-means-1" class="section level3">
 <h3>&gt;&gt;&gt;&gt; Raw data and means</h3>
@@ -4475,6 +5580,43 @@ sperm_vib_norm</code></pre>
 
 sperm_vib_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-33-1">
+Past versions of unnamed-chunk-33-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-33-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-33-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="matched-vs.-mismatched-3" class="section level3">
 <h3>Matched vs. mismatched</h3>
@@ -4550,6 +5692,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-37-1">
+Past versions of unnamed-chunk-37-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-37-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-37-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="block-effect-1" class="section level3">
 <h3>&gt;&gt;&gt;&gt; Block effect</h3>
@@ -4575,6 +5754,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-38-1">
+Past versions of unnamed-chunk-38-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-38-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-38-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="section-1" class="section level2">
@@ -4589,6 +5805,43 @@ viability_m2 &lt;- glmer(cbind(live, dead) ~ mito * nuclear * age + days + block
 <h4>&gt;&gt;&gt;&gt; Check diagnostics</h4>
 <pre class="r"><code>performance::check_model(viability_m2)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-40-1">
+Past versions of unnamed-chunk-40-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-40-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-40-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(viability_m2)</code></pre>
 <pre># Overdispersion test
 
@@ -4596,7 +5849,44 @@ viability_m2 &lt;- glmer(cbind(live, dead) ~ mito * nuclear * age + days + block
           p-value = < 0.001
 </pre>
 <pre class="r"><code>testDispersion(viability_m2)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-41-1">
+Past versions of unnamed-chunk-41-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-41-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-41-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -4608,10 +5898,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = viability_m2, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-41-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-41-2">
+Past versions of unnamed-chunk-41-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-41-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-41-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-41-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-41-3">
+Past versions of unnamed-chunk-41-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-41-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-41-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-41-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-41-4">
+Past versions of unnamed-chunk-41-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-41-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-41-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-5" class="section level4 tabset">
 <h4 class="tabset">&gt;&gt;&gt;&gt; Results</h4>
@@ -5108,6 +6509,43 @@ NA
 
 sperm_stress_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-43-1">
+Past versions of unnamed-chunk-43-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-43-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-43-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data-and-means-2" class="section level5">
 <h5>&gt;&gt;&gt;&gt;&gt; Raw data and means</h5>
@@ -5145,6 +6583,43 @@ sperm_stress_norm</code></pre>
 
 sperm_stress_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-44-1">
+Past versions of unnamed-chunk-44-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-44-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-44-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -5214,6 +6689,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 sperm_diffs_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-47-1">
+Past versions of unnamed-chunk-47-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-47-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-47-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="sperm-quality" class="section level2 tabset">
@@ -5238,6 +6750,43 @@ viability_diff &lt;- sperm_vib_filt %&gt;%
   facet_grid(mito ~ nuclear) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-49-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-49-1">
+Past versions of unnamed-chunk-49-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-49-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-49-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="old-males-1" class="section level3">
 <h3>&gt;&gt;&gt; Old males</h3>
@@ -5248,8 +6797,82 @@ viability_diff &lt;- sperm_vib_filt %&gt;%
   facet_grid(mito ~ nuclear) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-50-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-50-1">
+Past versions of unnamed-chunk-50-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-50-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-50-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(viability_diff$diff)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-51-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-51-1">
+Past versions of unnamed-chunk-51-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-51-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-51-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>vib_diff_test &lt;- lmerTest::lmer(diff ~ mito * nuclear * age + block + days + (1 + age|LINE), 
                                 data = viability_diff)</code></pre>
 </div>
@@ -5260,8 +6883,82 @@ viability_diff &lt;- sperm_vib_filt %&gt;%
 <h3>&gt;&gt;&gt; Check diagnostics</h3>
 <pre class="r"><code>performance::check_model(vib_diff_test)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-52-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-52-1">
+Past versions of unnamed-chunk-52-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-52-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-52-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>testDispersion(vib_diff_test)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-53-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-53-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-53-1">
+Past versions of unnamed-chunk-53-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-53-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-53-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -5273,10 +6970,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = vib_diff_test, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-53-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-53-2">
+Past versions of unnamed-chunk-53-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-53-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-53-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-53-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-53-3">
+Past versions of unnamed-chunk-53-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-53-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-53-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-53-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-53-4">
+Past versions of unnamed-chunk-53-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-53-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-53-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-6" class="section level3 tabset">
 <h3 class="tabset">&gt;&gt;&gt; Results</h3>
@@ -5702,6 +7510,43 @@ p.value
 
 sperm_qual_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-55-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-55-1">
+Past versions of unnamed-chunk-55-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-55-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-55-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="matched-vs.-mismatched-5" class="section level3">
@@ -5774,10 +7619,84 @@ excluding this outlier.</p>
   theme() + 
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-58-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-58-1">
+Past versions of unnamed-chunk-58-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-58-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-58-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="analysis" class="section level2 tabset">
 <h2 class="tabset">&gt;&gt; Analysis</h2>
 <pre class="r"><code>hist(sperm_met$p.a2, breaks = 50)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-59-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-59-1">
+Past versions of unnamed-chunk-59-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-59-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-59-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="with-outlier" class="section level3">
 <h3>&gt;&gt;&gt; With outlier</h3>
 <pre class="r"><code>met_mod_outlier_test &lt;- lmerTest::lmer(p.a2 ~ mito * nuclear * age + (1 + age|LINE),
@@ -5805,8 +7724,82 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 <h4>&gt;&gt;&gt;&gt; Check diagnostics</h4>
 <pre class="r"><code>performance::check_model(met_mod_outlier_test)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-62-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-62-1">
+Past versions of unnamed-chunk-62-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-62-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-62-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>testDispersion(met_mod_outlier_test)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-63-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-63-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-63-1">
+Past versions of unnamed-chunk-63-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-63-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-63-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -5818,10 +7811,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = met_mod_outlier_test, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-63-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-63-2">
+Past versions of unnamed-chunk-63-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-63-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-63-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-63-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-63-3">
+Past versions of unnamed-chunk-63-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-63-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-63-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-63-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-63-4">
+Past versions of unnamed-chunk-63-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-63-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-63-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -5875,6 +7979,43 @@ Degrees-of-freedom method: kenward-roger
 
 sperm_met_norm</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-65-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-65-1">
+Past versions of unnamed-chunk-65-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-65-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-65-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="raw-data-and-means-3" class="section level3">
 <h3>&gt;&gt;&gt; Raw data and means</h3>
@@ -5909,6 +8050,43 @@ sperm_met_norm</code></pre>
 
 sperm_met_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-66-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-66-1">
+Past versions of unnamed-chunk-66-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-66-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-66-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="matched-vs.-mismatched-6" class="section level3">
 <h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
@@ -5973,6 +8151,43 @@ here, we only measured young (5 day old) males.</p>
   facet_grid(Day ~ Block) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-69-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-69-1">
+Past versions of unnamed-chunk-69-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-69-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-69-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="copulation-duration" class="section level3">
 <h3>&gt;&gt;&gt; Copulation duration</h3>
@@ -5986,6 +8201,43 @@ here, we only measured young (5 day old) males.</p>
   facet_grid(Day ~ Block) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-70-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-70-1">
+Past versions of unnamed-chunk-70-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-70-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-70-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="section-3" class="section level2">
@@ -5998,6 +8250,43 @@ here, we only measured young (5 day old) males.</p>
 <h3>&gt;&gt;&gt; Check diagnostics</h3>
 <pre class="r"><code>performance::check_model(p1.mod1)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-72-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-72-1">
+Past versions of unnamed-chunk-72-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-72-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-72-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(p1.mod1)</code></pre>
 <pre># Overdispersion test
 
@@ -6005,7 +8294,44 @@ here, we only measured young (5 day old) males.</p>
           p-value = 0.224
 </pre>
 <pre class="r"><code>testDispersion(p1.mod1)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-73-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-73-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-73-1">
+Past versions of unnamed-chunk-73-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-73-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-73-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -6017,10 +8343,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = p1.mod1, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-73-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-73-2">
+Past versions of unnamed-chunk-73-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-73-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-73-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-73-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-73-3">
+Past versions of unnamed-chunk-73-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-73-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-73-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-73-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-73-4">
+Past versions of unnamed-chunk-73-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-73-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-73-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-8" class="section level3">
 <h3>&gt;&gt;&gt; Results</h3>
@@ -6212,6 +8649,43 @@ Inf
 
 p1plot_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-74-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-74-1">
+Past versions of unnamed-chunk-74-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-74-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-74-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="matched-vs.-mismatched-7" class="section level3">
 <h3>&gt;&gt;&gt; Matched vs. mismatched</h3>
@@ -6274,6 +8748,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
   facet_grid(Day ~ Block) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-77-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-77-1">
+Past versions of unnamed-chunk-77-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-77-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-77-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="copulation-duration-1" class="section level4">
 <h4>&gt;&gt;&gt;&gt; Copulation duration</h4>
@@ -6287,6 +8798,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
   facet_grid(Day ~ Block) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-78-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-78-1">
+Past versions of unnamed-chunk-78-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-78-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-78-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="section-4" class="section level3 tabset">
@@ -6297,6 +8845,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 <h4>&gt;&gt;&gt;&gt; Check diagnostics</h4>
 <pre class="r"><code>performance::check_model(p2.mod1)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-80-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-80-1">
+Past versions of unnamed-chunk-80-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-80-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-80-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>performance::check_overdispersion(p2.mod1)</code></pre>
 <pre># Overdispersion test
 
@@ -6304,7 +8889,44 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
           p-value = < 0.001
 </pre>
 <pre class="r"><code>testDispersion(p2.mod1)</code></pre>
-<img src="figure/male_fertility.Rmd/unnamed-chunk-81-1.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/male_fertility.Rmd/unnamed-chunk-81-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-81-1">
+Past versions of unnamed-chunk-81-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-81-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-81-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre>
     DHARMa nonparametric dispersion test via sd of residuals fitted vs.
     simulated
@@ -6316,10 +8938,121 @@ alternative hypothesis: two.sided
 <pre class="r"><code>simulationOutput &lt;- simulateResiduals(fittedModel = p2.mod1, plot = FALSE)
 hist(residuals(simulationOutput))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-81-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-81-2">
+Past versions of unnamed-chunk-81-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-81-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-81-2.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>hist(residuals(simulationOutput, quantileFunction = qnorm, outlierValues = c(-7,7)))</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-81-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-81-3">
+Past versions of unnamed-chunk-81-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-81-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-81-3.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot(simulationOutput)</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-81-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-81-4">
+Past versions of unnamed-chunk-81-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-81-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-81-4.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>car::Anova(p2.mod1, type = &quot;3&quot;)</code></pre>
 <pre>Analysis of Deviance Table (Type III Wald chisquare tests)
 
@@ -6585,6 +9318,43 @@ Inf
 
 p2plot_raw</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-83-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-83-1">
+Past versions of unnamed-chunk-83-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-83-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-83-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="matched-vs.-mismatched-8" class="section level3">
@@ -6643,6 +9413,43 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 comb_spermcomp</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-86-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-86-1">
+Past versions of unnamed-chunk-86-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-86-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-86-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -6667,6 +9474,43 @@ visualise this either as the ranked means (1-9) or as a scatterplot.</p>
   scale_y_continuous(breaks = 1:9) +
   theme_bw()</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-88-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-88-1">
+Past versions of unnamed-chunk-88-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-88-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-88-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="scatterplot" class="section level3">
 <h3>&gt;&gt;&gt; Scatterplot</h3>
@@ -6686,6 +9530,43 @@ pdat.wide %&gt;%
   #ggsave(&#39;figures/sperm_comp_cor.pdf&#39;, height = 4, width = 4.8, dpi = 600, useDingbats = FALSE) +
   NULL</code></pre>
 <p><img src="figure/male_fertility.Rmd/unnamed-chunk-89-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-89-1">
+Past versions of unnamed-chunk-89-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-89-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-89-1.png" target="_blank">a7bae31</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>cor.test(pdat.wide$P1, pdat.wide$P2, method = &quot;s&quot;)</code></pre>
 <pre>
     Spearman's rank correlation rho
@@ -6725,48 +9606,48 @@ attached base packages:
 
 other attached packages:
  [1] conflicted_1.2.0 showtext_0.9-7   showtextdb_3.0   sysfonts_0.8.9  
- [5] knitrhooks_0.0.4 knitr_1.48       kableExtra_1.4.0 emmeans_1.10.3  
+ [5] knitrhooks_0.0.4 knitr_1.48       kableExtra_1.4.0 emmeans_1.10.4  
  [9] DHARMa_0.4.6     lme4_1.1-35.5    Matrix_1.7-0     lubridate_1.9.3 
 [13] forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4      purrr_1.0.2     
 [17] readr_2.1.5      tidyr_1.3.1      tibble_3.2.1     ggplot2_3.5.1   
 [21] tidyverse_2.0.0  workflowr_1.7.1 
 
 loaded via a namespace (and not attached):
-  [1] Rdpack_2.6          rlang_1.1.4         magrittr_2.0.3     
+  [1] Rdpack_2.6.1        rlang_1.1.4         magrittr_2.0.3     
   [4] git2r_0.33.0        compiler_4.4.0      getPass_0.2-4      
   [7] mgcv_1.9-1          systemfonts_1.1.0   callr_3.7.6        
  [10] vctrs_0.6.5         pkgconfig_2.0.3     fastmap_1.2.0      
  [13] backports_1.5.0     MetBrewer_0.2.0     labeling_0.4.3     
- [16] utf8_1.2.4          promises_1.3.0      rmarkdown_2.27     
- [19] tzdb_0.4.0          ps_1.7.7            nloptr_2.1.1       
- [22] xfun_0.45           cachem_1.1.0        jsonlite_1.8.8     
- [25] highr_0.11          later_1.3.2         broom_1.0.6        
+ [16] utf8_1.2.4          promises_1.3.0      rmarkdown_2.28     
+ [19] tzdb_0.4.0          ps_1.8.0            nloptr_2.1.1       
+ [22] xfun_0.48           cachem_1.1.0        jsonlite_1.8.9     
+ [25] highr_0.11          later_1.3.2         broom_1.0.7        
  [28] parallel_4.4.0      R6_2.5.1            gap.datasets_0.0.6 
- [31] qgam_1.3.4          bslib_0.7.0         stringi_1.8.4      
- [34] car_3.1-2           boot_1.3-30         jquerylib_0.1.4    
+ [31] qgam_1.3.4          bslib_0.8.0         stringi_1.8.4      
+ [34] car_3.1-3           boot_1.3-31         jquerylib_0.1.4    
  [37] numDeriv_2016.8-1.1 estimability_1.5.1  iterators_1.0.14   
- [40] Rcpp_1.0.12         httpuv_1.6.15       splines_4.4.0      
- [43] timechange_0.3.0    tidyselect_1.2.1    abind_1.4-5        
- [46] rstudioapi_0.16.0   yaml_2.3.9          codetools_0.2-20   
+ [40] Rcpp_1.0.13         httpuv_1.6.15       splines_4.4.0      
+ [43] timechange_0.3.0    tidyselect_1.2.1    abind_1.4-8        
+ [46] rstudioapi_0.16.0   yaml_2.3.10         codetools_0.2-20   
  [49] doParallel_1.0.17   processx_3.8.4      plyr_1.8.9         
- [52] lattice_0.22-6      lmerTest_3.1-3      shiny_1.8.1.1      
- [55] bayestestR_0.13.2   withr_3.0.0         coda_0.19-4.1      
- [58] evaluate_0.24.0     xml2_1.3.6          ggpubr_0.6.0       
- [61] pillar_1.9.0        carData_3.0-5       gap_1.5-3          
- [64] whisker_0.4.1       foreach_1.5.2       insight_0.20.1     
+ [52] lattice_0.22-6      lmerTest_3.1-3      shiny_1.9.1        
+ [55] bayestestR_0.14.0   withr_3.0.1         coda_0.19-4.1      
+ [58] evaluate_1.0.0      xml2_1.3.6          ggpubr_0.6.0       
+ [61] pillar_1.9.0        carData_3.0-5       gap_1.6            
+ [64] whisker_0.4.1       foreach_1.5.2       insight_0.20.5     
  [67] generics_0.1.3      rprojroot_2.0.4     hms_1.1.3          
- [70] munsell_0.5.1       scales_1.3.0        minqa_1.2.7        
- [73] xtable_1.8-4        glue_1.7.0          tools_4.4.0        
- [76] see_0.8.4           ggsignif_0.6.4      fs_1.6.4           
- [79] mvtnorm_1.2-5       grid_4.4.0          rbibutils_2.2.16   
- [82] datawizard_0.11.0   colorspace_2.1-0    nlme_3.1-165       
- [85] patchwork_1.2.0     performance_0.12.0  cli_3.6.3          
- [88] fansi_1.0.6         viridisLite_0.4.2   svglite_2.1.3      
- [91] gtable_0.3.5        rstatix_0.7.2       sass_0.4.9         
- [94] digest_0.6.36       pbkrtest_0.5.3      ggrepel_0.9.5      
- [97] farver_2.1.2        memoise_2.0.1       htmltools_0.5.8.1  
-[100] lifecycle_1.0.4     httr_1.4.7          mime_0.12          
-[103] MASS_7.3-61        
+ [70] munsell_0.5.1       scales_1.3.0        minqa_1.2.8        
+ [73] xtable_1.8-4        glue_1.8.0          tools_4.4.0        
+ [76] see_0.9.0           ggsignif_0.6.4      fs_1.6.4           
+ [79] mvtnorm_1.3-1       grid_4.4.0          rbibutils_2.3      
+ [82] datawizard_0.13.0   colorspace_2.1-1    nlme_3.1-166       
+ [85] patchwork_1.3.0     performance_0.12.3  Formula_1.2-5      
+ [88] cli_3.6.3           fansi_1.0.6         viridisLite_0.4.2  
+ [91] svglite_2.1.3       gtable_0.3.5        rstatix_0.7.2      
+ [94] sass_0.4.9          digest_0.6.37       pbkrtest_0.5.3     
+ [97] ggrepel_0.9.6       farver_2.1.2        memoise_2.0.1      
+[100] htmltools_0.5.8.1   lifecycle_1.0.4     httr_1.4.7         
+[103] mime_0.12           MASS_7.3-61        
 </pre>
 </div>
 </div>
