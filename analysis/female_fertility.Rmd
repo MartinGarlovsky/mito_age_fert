@@ -388,30 +388,30 @@ plot_data <- data.frame(prediction_data, PI.boot2)
 colnames(plot_data)[5] <- "progeny"
 
 plot_data_summary <- plot_data %>% 
-  group_by(nuclear, vial) %>% 
+  group_by(mito, nuclear, vial) %>% 
   summarise(mn_fit = mean(progeny),
             #mn_sef = mean(se.fit),
             mn_lwr = mean(lwr),
             mn_upr = mean(upr)
             ) %>% 
-  ungroup() %>% mutate(across(3:5, ~exp(.x)))
+  ungroup() %>% mutate(across(4:6, ~exp(.x)))
 
 # plot
 fert_mns <- fert_filt %>% 
-  group_by(nuclear, vial) %>% 
+  group_by(mito, nuclear, vial) %>% 
   summarise(mn = mean(progeny),
             se = sd(progeny)/sqrt(n()),
             s95 = se * 1.96)
 
 rateP <- fert_filt %>% 
-  ggplot(aes(x = vial, y = progeny, colour = nuclear)) +
-  geom_point(aes(y = progeny, colour = nuclear, shape = mito), alpha = .15,
+  ggplot(aes(x = vial, y = progeny, colour = mito)) +
+  geom_point(aes(y = progeny, colour = mito, shape = mito), alpha = .15,
              position = position_jitterdodge(dodge.width = .5, jitter.width = .1)) +
   geom_ribbon(data = plot_data_summary,
-              aes(y = mn_fit, ymin = mn_lwr, ymax = mn_upr, fill = nuclear, group = nuclear),
+              aes(y = mn_fit, ymin = mn_lwr, ymax = mn_upr, fill = mito, group = mito),
               alpha = .5, colour = NA) +
   geom_line(data = plot_data_summary,
-            aes(y = mn_fit, colour = nuclear, group = nuclear)) +
+            aes(y = mn_fit, colour = mito, group = mito)) +
   geom_errorbar(data = fert_mns,
                 aes(y = mn, ymin = mn - s95, ymax = mn + s95),
                 width = .25, position = position_dodge(width = .5)) +
@@ -420,6 +420,7 @@ rateP <- fert_filt %>%
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   labs(y = 'Fecundity per vial (mean ± SE)') +
+  facet_wrap(~ nuclear) + 
   theme_bw() + 
   theme() + 
   #ggsave('figures/vial_means.pdf', height = 3, width = 9, dpi = 600, useDingbats = FALSE) +
