@@ -404,7 +404,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-10-10
+<strong>Last updated:</strong> 2025-04-02
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -535,15 +535,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttreedfaa300cb220b51e4272d71963c3bb006af8afd3targetblankdfaa300a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree5ebfaed1975cb8120047466f855c2b65daf49bdatargetblank5ebfaeda">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/dfaa300cb220b51e4272d71963c3bb006af8afd3" target="_blank">dfaa300</a>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/5ebfaed1975cb8120047466f855c2b65daf49bda" target="_blank">5ebfaed</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttreedfaa300cb220b51e4272d71963c3bb006af8afd3targetblankdfaa300a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomMartinGarlovskymitoageferttree5ebfaed1975cb8120047466f855c2b65daf49bdatargetblank5ebfaeda"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -553,7 +553,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/dfaa300cb220b51e4272d71963c3bb006af8afd3" target="_blank">dfaa300</a>.
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/tree/5ebfaed1975cb8120047466f855c2b65daf49bda" target="_blank">5ebfaed</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -573,13 +573,17 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
 
 Untracked files:
     Untracked:  README.html
     Untracked:  check_lines.R
     Untracked:  code/data_wrangling.R
+    Untracked:  code/female_predictions_13-Feb-2025.sh
+    Untracked:  code/female_rate_predictions.R
     Untracked:  code/plotting_Script.R
     Untracked:  data/Data_raw_emmely.csv
+    Untracked:  data/SNP_data/
     Untracked:  data/defence.csv
     Untracked:  data/male_fertility.csv
     Untracked:  data/mito_34sigdiffSNPs_consensus_incl_colnames.csv
@@ -595,11 +599,13 @@ Untracked files:
     Untracked:  data/wrangled/
     Untracked:  figures/
     Untracked:  output/SNP_clusters.csv
+    Untracked:  output/anova_tables/
     Untracked:  output/bod_brm.rds
     Untracked:  output/female_rate_dredge.rds
     Untracked:  output/female_rates_bb.Rdata
     Untracked:  output/female_rates_boot.Rdata
     Untracked:  output/female_rates_poly.Rdata
+    Untracked:  output/fst_tabs.csv
     Untracked:  output/male_fec_dredge.rds
     Untracked:  output/male_hatch_dredge.rds
     Untracked:  output/male_hatch_dredge_reduced.rds
@@ -609,6 +615,7 @@ Untracked files:
     Untracked:  snp_matrix_dobler.csv
 
 Unstaged changes:
+    Modified:   analysis/SNP_clusters.Rmd
     Deleted:    analysis/sperm_comp.Rmd
     Modified:   data/README.md
 
@@ -656,6 +663,41 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/5ebfaed1975cb8120047466f855c2b65daf49bda/analysis/male_fertility.Rmd" target="_blank">5ebfaed</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2025-04-02
+</td>
+<td>
+wflow_publish(c("analysis/body_size.Rmd",
+"analysis/female_fertility.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/MartinGarlovsky/mito_age_fert/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/male_fertility.html" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -761,7 +803,8 @@ sperm_vib_filt &lt;- read.csv(&quot;data/wrangled/sperm_viability_wrangled.csv&q
 
 # sperm metabolism
 sperm_met &lt;- read.csv(&quot;data/wrangled/sperm_met_wrangled.csv&quot;) %&gt;% 
-  mutate(mito_snp = as.factor(mito_snp),
+  mutate(age = fct_relevel(age, c(&quot;young&quot;,&quot;old&quot;)),
+         mito_snp = as.factor(mito_snp),
          p.a2 = a2/100, # convert to percentage proportion
          coevolved = if_else(mito == nuclear, &quot;matched&quot;, &quot;mismatched&quot;)) 
 
@@ -882,8 +925,9 @@ MartinGarlovsky
 male_fec_test &lt;- lmerTest::lmer(total_eggs ~ mito * nuclear * age + (1|LINE:age), 
                                 data = male_fert_filt, REML = TRUE) 
 
-anova(male_fec_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% broom::tidy() %&gt;% 
-  as_tibble() %&gt;% 
+anova(male_fec_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() %&gt;% #write_csv(&quot;output/anova_tables/male_fecundity.csv&quot;) %&gt;% # save anova table for supp. tables
   kable(digits = 3, 
         caption = &#39;Type III Analysis of Variance Table with Kenward-Roger`s method&#39;) %&gt;% 
   kable_styling(full_width = FALSE)</code></pre>
@@ -2603,8 +2647,10 @@ B - C
 male_fecundity_norm &lt;- emmeans(male_fec_test, ~ mito * nuclear * age) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = &#39;Partner fecundity (EMM)&#39;) +
+  labs(y = &#39;Partner fecundity (EMM ± 95% CI)&#39;) +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   facet_wrap(~ age) +
@@ -2727,112 +2773,16 @@ MartinGarlovsky
 <pre class="r"><code>male_fec_coevo &lt;- lmerTest::lmer(total_eggs ~ coevolved * age + (1 + age|LINE), 
                                  data = male_fert_filt, REML = TRUE) 
 
-anova(male_fec_coevo, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% broom::tidy() %&gt;% 
-  as_tibble() %&gt;% 
-  kable(digits = 3, 
-        caption = &#39;Type III Analysis of Variance Table with Kenward-Roger`s method&#39;) %&gt;% 
-  kable_styling(full_width = FALSE)</code></pre>
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-Type III Analysis of Variance Table with Kenward-Roger`s method
-</caption>
-<thead>
-<tr>
-<th style="text-align:left;">
-term
-</th>
-<th style="text-align:right;">
-sumsq
-</th>
-<th style="text-align:right;">
-meansq
-</th>
-<th style="text-align:right;">
-NumDF
-</th>
-<th style="text-align:right;">
-DenDF
-</th>
-<th style="text-align:right;">
-statistic
-</th>
-<th style="text-align:right;">
-p.value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-coevolved
-</td>
-<td style="text-align:right;">
-1255.595
-</td>
-<td style="text-align:right;">
-1255.595
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-24.950
-</td>
-<td style="text-align:right;">
-1.439
-</td>
-<td style="text-align:right;">
-0.242
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-age
-</td>
-<td style="text-align:right;">
-442491.873
-</td>
-<td style="text-align:right;">
-442491.873
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-24.942
-</td>
-<td style="text-align:right;">
-506.988
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-coevolved:age
-</td>
-<td style="text-align:right;">
-151.029
-</td>
-<td style="text-align:right;">
-151.029
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-24.942
-</td>
-<td style="text-align:right;">
-0.173
-</td>
-<td style="text-align:right;">
-0.681
-</td>
-</tr>
-</tbody>
-</table>
+anova(male_fec_coevo, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble()</code></pre>
+<pre># A tibble: 3 × 7
+  term            sumsq  meansq NumDF DenDF statistic  p.value
+  <chr>           <dbl>   <dbl> <int> <dbl>     <dbl>    <dbl>
+1 coevolved       1256.   1256.     1  24.9     1.44  2.42e- 1
+2 age           442492. 442492.     1  24.9   507.    4.32e-18
+3 coevolved:age    151.    151.     1  24.9     0.173 6.81e- 1
+</pre>
 <pre class="r"><code>#summary(male_fec_coevo)</code></pre>
 </div>
 <div id="mito-type-analysis" class="section level3">
@@ -3204,6 +3154,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-10-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-10-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -3392,8 +3353,9 @@ MartinGarlovsky
 </div>
 <div id="results-1" class="section level3 tabset">
 <h3 class="tabset">&gt;&gt;&gt; Results</h3>
-<pre class="r"><code>car::Anova(hatch2, type = &quot;3&quot;) %&gt;% broom::tidy() %&gt;% 
-  as_tibble() %&gt;% 
+<pre class="r"><code>car::Anova(hatch2, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() %&gt;% #write_csv(&quot;output/anova_tables/male_fert_young.csv&quot;) %&gt;% # save anova table for supp. tables
   kable(digits = 3, 
         caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
   kable_styling(full_width = FALSE)</code></pre>
@@ -3580,7 +3542,7 @@ hatchingsuccess_young_norm &lt;- emmeans(hatch2, ~ mito * nuclear, type = &#39;r
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = &#39;% Hatching success (EMM)&#39;) +
+  labs(y = &#39;% Hatching success (EMM ± 95% CI)&#39;) +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   theme_bw() + 
@@ -3729,6 +3691,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-15-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-15-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -3830,6 +3803,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-16-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-16-1.png" target="_blank">a7bae31</a>
@@ -4020,6 +4004,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-18-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-18-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -4042,8 +4037,9 @@ MartinGarlovsky
 </div>
 <div id="results-2" class="section level4 tabset">
 <h4 class="tabset">&gt;&gt;&gt;&gt; Results</h4>
-<pre class="r"><code>car::Anova(ster_md, type = &quot;3&quot;) %&gt;% broom::tidy() %&gt;% 
-  as_tibble() %&gt;% 
+<pre class="r"><code>car::Anova(ster_md, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() %&gt;% #write_csv(&quot;output/anova_tables/male_fert_old.csv&quot;) %&gt;% # save anova table for supp. tables
   kable(digits = 3, 
         caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
   kable_styling(full_width = FALSE)</code></pre>
@@ -4228,7 +4224,7 @@ hatchingsuccess_old_norm &lt;- emmeans(ster_emm, ~ mito * nuclear, type = &#39;r
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = &#39;Proportion fertile (EMM)&#39;) +
+  labs(y = &#39;Proportion fertile (EMM ± 95% CI)&#39;) +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   theme_bw() + 
@@ -4508,8 +4504,10 @@ mito_snp:nuclear
   mutate(age = fct_relevel(tolower(age), c(&quot;young&quot;, &quot;old&quot;))) %&gt;% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = &#39;Proportion fertile (EMM)&#39;) +
+  labs(y = &#39;Proportion fertile (EMM ± 95% CI)&#39;) +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   facet_wrap(~age) +
@@ -4802,6 +4800,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-29-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-29-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -4990,7 +4999,9 @@ MartinGarlovsky
 </div>
 <div id="section" class="section level3">
 <h3>&gt;&gt;&gt;&gt;</h3>
-<pre class="r"><code>car::Anova(viability_m1, type = &quot;3&quot;) %&gt;% broom::tidy() %&gt;% 
+<pre class="r"><code>car::Anova(viability_m1, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  #write_csv(&quot;output/anova_tables/viability_t0.csv&quot;) %&gt;% # save anova table for supp. tables
   as_tibble() %&gt;% 
   kable(digits = 3, 
         caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
@@ -5492,8 +5503,8 @@ Inf
 <pre class="r"><code>sperm_vib_norm &lt;- emmeans(viability_m1, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
-  #               width = .25, position = position_dodge(width = .65)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = &#39;Sperm viability (EMM)&#39;) +
   scale_colour_manual(values = met3) +
@@ -5829,6 +5840,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-40-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-40-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -6016,24 +6038,176 @@ MartinGarlovsky
 </div>
 <div id="results-5" class="section level4 tabset">
 <h4 class="tabset">&gt;&gt;&gt;&gt; Results</h4>
-<pre class="r"><code>car::Anova(viability_m2, type = &quot;3&quot;)</code></pre>
-<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
-
-Response: cbind(live, dead)
-                   Chisq Df Pr(>Chisq)    
-(Intercept)      77.6979  1  < 2.2e-16 ***
-mito              7.1190  2   0.028453 *  
-nuclear           0.5454  2   0.761314    
-age              58.1012  1   2.49e-14 ***
-days              3.5141  1   0.060850 .  
-block            15.1182  1   0.000101 ***
-mito:nuclear      3.7595  4   0.439535    
-mito:age          0.8531  2   0.652755    
-nuclear:age       6.0222  2   0.049236 *  
-mito:nuclear:age  1.7779  4   0.776531    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-</pre>
+<pre class="r"><code>car::Anova(viability_m2, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  #write_csv(&quot;output/anova_tables/viability_t30.csv&quot;) %&gt;% # save anova table for supp. tables
+  as_tibble() %&gt;% 
+  kable(digits = 3, 
+        caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
+  kable_styling(full_width = FALSE)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Analysis of Deviance Table (Type III Wald chisquare tests)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+77.698
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito
+</td>
+<td style="text-align:right;">
+7.119
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.028
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:right;">
+0.545
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.761
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+58.101
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+days
+</td>
+<td style="text-align:right;">
+3.514
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.061
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+block
+</td>
+<td style="text-align:right;">
+15.118
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:nuclear
+</td>
+<td style="text-align:right;">
+3.759
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.440
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:age
+</td>
+<td style="text-align:right;">
+0.853
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.653
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear:age
+</td>
+<td style="text-align:right;">
+6.022
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.049
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:nuclear:age
+</td>
+<td style="text-align:right;">
+1.778
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.777
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>#summary(viability_m2)
 
 # posthoc tests
@@ -6498,6 +6672,8 @@ NA
 <pre class="r"><code>sperm_stress_norm &lt;- emmeans(viability_m2, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = &#39;Sperm viability (EMM)&#39;) +
   scale_colour_manual(values = met3) +
@@ -6674,9 +6850,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 <pre class="r"><code>sperm_diffs_norm &lt;- emmeans(viability_m1, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 23, position = position_dodge(width = .5)) +
+  # after stress
   geom_line(data = emmeans(viability_m2, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble(),
             aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(data = emmeans(viability_m2, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble(),
+  #               aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(data = emmeans(viability_m2, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble(),
              aes(fill = mito), size = 3, pch = 22, position = position_dodge(width = .5)) + 
   labs(y = &#39;Sperm viability (EMM)&#39;) +
@@ -6726,6 +6908,21 @@ MartinGarlovsky
 </table>
 </div>
 </div>
+<pre class="r"><code># bind_rows(
+#   emmeans(viability_m1, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble() %&gt;% mutate(stage = &quot;t0&quot;),
+#   emmeans(viability_m2, ~ mito * nuclear * age, type = &#39;response&#39;) %&gt;% as_tibble() %&gt;% mutate(stage = &quot;t30&quot;)) %&gt;%
+#   ggplot(aes(x = nuclear, y = prob, fill = mito, shape = stage)) +
+#   geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), position = position_dodge(width = .5), width = .5) +
+#   geom_line(aes(group = interaction(mito, stage), colour = mito), position = position_dodge(width = .5)) +
+#   geom_point(size = 3, position = position_dodge(width = .5)) +
+#   labs(y = &#39;No. progeny (EMM)&#39;) +
+#   scale_colour_manual(values = met3) +
+#   scale_fill_manual(values = met3) +
+#   scale_shape_manual(values = c(23, 22)) + 
+#   facet_wrap(~ age) +
+#   theme_bw() + 
+#   theme() + 
+#   NULL</code></pre>
 </div>
 </div>
 <div id="sperm-quality" class="section level2 tabset">
@@ -6905,6 +7102,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-52-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-52-1.png" target="_blank">a7bae31</a>
@@ -7088,8 +7296,10 @@ MartinGarlovsky
 </div>
 <div id="results-6" class="section level3 tabset">
 <h3 class="tabset">&gt;&gt;&gt; Results</h3>
-<pre class="r"><code>anova(vib_diff_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% broom::tidy() %&gt;% 
+<pre class="r"><code>anova(vib_diff_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
   as_tibble() %&gt;% 
+  #write_csv(&quot;output/anova_tables/sperm_quality.csv&quot;) %&gt;% # save anova table for supp. tables
   kable(digits = 3, 
         caption = &#39;Type III Analysis of Variance Table with Kenward-Roger`s method&#39;) %&gt;% 
   kable_styling(full_width = FALSE)</code></pre>
@@ -7499,7 +7709,9 @@ p.value
 <pre class="r"><code>sperm_qual_norm &lt;- emmeans(vib_diff_test, ~ mito * nuclear * age) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  geom_point(size = 3, pch = 23, position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL),
+  #               width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = &#39;Sperm viability (EMM)&#39;) +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
@@ -7748,6 +7960,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-62-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-62-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -7931,26 +8154,27 @@ MartinGarlovsky
 </div>
 <div id="results-7" class="section level2 tabset">
 <h2 class="tabset">&gt;&gt; Results</h2>
-<pre class="r"><code>anova(met_mod_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;)</code></pre>
-<pre>Type III Analysis of Variance Table with Kenward-Roger's method
-                   Sum Sq  Mean Sq NumDF  DenDF  F value    Pr(>F)    
-mito             0.000699 0.000350     2 17.984   1.1574    0.3366    
-nuclear          0.000625 0.000313     2 17.980   1.0350    0.3754    
-age              0.072582 0.072582     1 17.985 240.3372 7.514e-12 ***
-mito:nuclear     0.000341 0.000085     4 17.978   0.2821    0.8857    
-mito:age         0.000088 0.000044     2 17.985   0.1449    0.8661    
-nuclear:age      0.000535 0.000268     2 17.981   0.8864    0.4294    
-mito:nuclear:age 0.000611 0.000153     4 17.979   0.5057    0.7321    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+<pre class="r"><code>anova(met_mod_test, type = &quot;III&quot;, ddf = &quot;Kenward-Roger&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() #%&gt;% write_csv(&quot;output/anova_tables/sperm_metabolism.csv&quot;) %&gt;% # save anova table for supp. tables</code></pre>
+<pre># A tibble: 7 × 7
+  term                 sumsq    meansq NumDF DenDF statistic  p.value
+  <chr>                <dbl>     <dbl> <int> <dbl>     <dbl>    <dbl>
+1 mito             0.000699  0.000350      2  18.0     1.16  3.37e- 1
+2 nuclear          0.000625  0.000313      2  18.0     1.04  3.75e- 1
+3 age              0.0726    0.0726        1  18.0   240.    7.51e-12
+4 mito:nuclear     0.000341  0.0000852     4  18.0     0.282 8.86e- 1
+5 mito:age         0.0000876 0.0000438     2  18.0     0.145 8.66e- 1
+6 nuclear:age      0.000535  0.000268      2  18.0     0.886 4.29e- 1
+7 mito:nuclear:age 0.000611  0.000153      4  18.0     0.506 7.32e- 1
 </pre>
 <pre class="r"><code>met_emm &lt;- emmeans(met_mod_test, ~ mito * nuclear * age)
 
 emmeans(met_mod_test, pairwise ~ age, adjust = &quot;tukey&quot;)</code></pre>
 <pre>$emmeans
  age   emmean      SE   df lower.CL upper.CL
- old    0.237 0.00150 17.9    0.234    0.240
  young  0.203 0.00153 18.0    0.200    0.207
+ old    0.237 0.00150 17.9    0.234    0.240
 
 Results are averaged over the levels of: mito, nuclear 
 Degrees-of-freedom method: kenward-roger 
@@ -7958,7 +8182,7 @@ Confidence level used: 0.95
 
 $contrasts
  contrast    estimate      SE df t.ratio p.value
- old - young   0.0334 0.00215 18  15.503  <.0001
+ young - old  -0.0334 0.00215 18 -15.503  <.0001
 
 Results are averaged over the levels of: mito, nuclear 
 Degrees-of-freedom method: kenward-roger 
@@ -7968,6 +8192,8 @@ Degrees-of-freedom method: kenward-roger
 <pre class="r"><code>sperm_met_norm &lt;- emmeans(met_mod_test, ~ mito * nuclear * age) %&gt;% as_tibble() %&gt;% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = &#39;Sperm metabolic rate, a2 (EMM)&#39;) +
   scale_colour_manual(values = met3) +
@@ -8074,6 +8300,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-66-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-66-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -8175,6 +8412,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-69-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-69-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -8272,6 +8520,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-72-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-72-1.png" target="_blank">a7bae31</a>
@@ -8461,20 +8720,119 @@ MartinGarlovsky
 </div>
 <div id="results-8" class="section level3">
 <h3>&gt;&gt;&gt; Results</h3>
-<pre class="r"><code>car::Anova(p1.mod1, type = &quot;3&quot;)</code></pre>
-<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
-
-Response: cbind(RED, BW)
-               Chisq Df Pr(>Chisq)    
-(Intercept)   6.2791  1   0.012217 *  
-mito          0.5736  2   0.750651    
-nuclear      12.7946  2   0.001666 ** 
-Day          16.8611  1  4.022e-05 ***
-cop.dur       2.2087  1   0.137236    
-mito:nuclear  2.4555  4   0.652627    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-</pre>
+<pre class="r"><code>car::Anova(p1.mod1, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() %&gt;% #write_csv(&quot;output/anova_tables/male_P1.csv&quot;) %&gt;% # save anova table for supp. tables
+  kable(digits = 3, 
+        caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
+  kable_styling(full_width = FALSE)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Analysis of Deviance Table (Type III Wald chisquare tests)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+6.279
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito
+</td>
+<td style="text-align:right;">
+0.574
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.751
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:right;">
+12.795
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Day
+</td>
+<td style="text-align:right;">
+16.861
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cop.dur
+</td>
+<td style="text-align:right;">
+2.209
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.137
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:nuclear
+</td>
+<td style="text-align:right;">
+2.455
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.653
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code># posthoc tests
 bind_rows(emmeans(p1.mod1, pairwise ~ nuclear, adjust = &quot;tukey&quot;)$contrasts %&gt;% broom::tidy() %&gt;%
             rename(p.value = adj.p.value),
@@ -8869,6 +9227,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/0ffce9c769d29ac3e07176b9dbda6b77bd091d55/docs/figure/male_fertility.Rmd/unnamed-chunk-80-1.png" target="_blank">0ffce9c</a>
+</td>
+<td>
+MartinGarlovsky
+</td>
+<td>
+2024-10-10
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/MartinGarlovsky/mito_age_fert/blob/a7bae315c55362b0f8f5789ad4c40a6b4a104b07/docs/figure/male_fertility.Rmd/unnamed-chunk-80-1.png" target="_blank">a7bae31</a>
 </td>
 <td>
@@ -9053,20 +9422,119 @@ MartinGarlovsky
 </table>
 </div>
 </div>
-<pre class="r"><code>car::Anova(p2.mod1, type = &quot;3&quot;)</code></pre>
-<pre>Analysis of Deviance Table (Type III Wald chisquare tests)
-
-Response: cbind(RED, BW)
-               Chisq Df Pr(>Chisq)    
-(Intercept)  12.5291  1  0.0004007 ***
-mito         10.6573  2  0.0048506 ** 
-nuclear      54.5493  2  1.428e-12 ***
-Day          49.9244  1  1.598e-12 ***
-cop.dur       0.0002  1  0.9884506    
-mito:nuclear  3.6814  4  0.4508420    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-</pre>
+<pre class="r"><code>car::Anova(p2.mod1, type = &quot;3&quot;) %&gt;% 
+  broom::tidy() %&gt;% 
+  as_tibble() %&gt;% #write_csv(&quot;output/anova_tables/male_P2.csv&quot;) %&gt;% # save anova table for supp. tables
+  kable(digits = 3, 
+        caption = &#39;Analysis of Deviance Table (Type III Wald chisquare tests)&#39;) %&gt;% 
+  kable_styling(full_width = FALSE)</code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Analysis of Deviance Table (Type III Wald chisquare tests)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+12.529
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito
+</td>
+<td style="text-align:right;">
+10.657
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.005
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear
+</td>
+<td style="text-align:right;">
+54.549
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Day
+</td>
+<td style="text-align:right;">
+49.924
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+cop.dur
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.988
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mito:nuclear
+</td>
+<td style="text-align:right;">
+3.681
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.451
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code># posthoc tests
 bind_rows(emmeans(p2.mod1, pairwise ~ mito, adjust = &quot;tukey&quot;)$contrasts %&gt;% broom::tidy() %&gt;%
             rename(p.value = adj.p.value),
@@ -9606,20 +10074,20 @@ attached base packages:
 
 other attached packages:
  [1] conflicted_1.2.0 showtext_0.9-7   showtextdb_3.0   sysfonts_0.8.9  
- [5] knitrhooks_0.0.4 knitr_1.48       kableExtra_1.4.0 emmeans_1.10.4  
- [9] DHARMa_0.4.6     lme4_1.1-35.5    Matrix_1.7-0     lubridate_1.9.3 
+ [5] knitrhooks_0.0.4 knitr_1.48       kableExtra_1.4.0 emmeans_1.10.5  
+ [9] DHARMa_0.4.7     lme4_1.1-35.5    Matrix_1.7-1     lubridate_1.9.3 
 [13] forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4      purrr_1.0.2     
 [17] readr_2.1.5      tidyr_1.3.1      tibble_3.2.1     ggplot2_3.5.1   
 [21] tidyverse_2.0.0  workflowr_1.7.1 
 
 loaded via a namespace (and not attached):
   [1] Rdpack_2.6.1        rlang_1.1.4         magrittr_2.0.3     
-  [4] git2r_0.33.0        compiler_4.4.0      getPass_0.2-4      
+  [4] git2r_0.35.0        compiler_4.4.0      getPass_0.2-4      
   [7] mgcv_1.9-1          systemfonts_1.1.0   callr_3.7.6        
  [10] vctrs_0.6.5         pkgconfig_2.0.3     fastmap_1.2.0      
  [13] backports_1.5.0     MetBrewer_0.2.0     labeling_0.4.3     
  [16] utf8_1.2.4          promises_1.3.0      rmarkdown_2.28     
- [19] tzdb_0.4.0          ps_1.8.0            nloptr_2.1.1       
+ [19] tzdb_0.4.0          ps_1.8.1            nloptr_2.1.1       
  [22] xfun_0.48           cachem_1.1.0        jsonlite_1.8.9     
  [25] highr_0.11          later_1.3.2         broom_1.0.7        
  [28] parallel_4.4.0      R6_2.5.1            gap.datasets_0.0.6 
@@ -9628,22 +10096,22 @@ loaded via a namespace (and not attached):
  [37] numDeriv_2016.8-1.1 estimability_1.5.1  iterators_1.0.14   
  [40] Rcpp_1.0.13         httpuv_1.6.15       splines_4.4.0      
  [43] timechange_0.3.0    tidyselect_1.2.1    abind_1.4-8        
- [46] rstudioapi_0.16.0   yaml_2.3.10         codetools_0.2-20   
+ [46] rstudioapi_0.17.1   yaml_2.3.10         codetools_0.2-20   
  [49] doParallel_1.0.17   processx_3.8.4      plyr_1.8.9         
  [52] lattice_0.22-6      lmerTest_3.1-3      shiny_1.9.1        
- [55] bayestestR_0.14.0   withr_3.0.1         coda_0.19-4.1      
- [58] evaluate_1.0.0      xml2_1.3.6          ggpubr_0.6.0       
+ [55] bayestestR_0.15.0   withr_3.0.2         coda_0.19-4.1      
+ [58] evaluate_1.0.1      xml2_1.3.6          ggpubr_0.6.0       
  [61] pillar_1.9.0        carData_3.0-5       gap_1.6            
- [64] whisker_0.4.1       foreach_1.5.2       insight_0.20.5     
+ [64] whisker_0.4.1       foreach_1.5.2       insight_1.0.1      
  [67] generics_0.1.3      rprojroot_2.0.4     hms_1.1.3          
  [70] munsell_0.5.1       scales_1.3.0        minqa_1.2.8        
  [73] xtable_1.8-4        glue_1.8.0          tools_4.4.0        
- [76] see_0.9.0           ggsignif_0.6.4      fs_1.6.4           
+ [76] see_0.9.0           ggsignif_0.6.4      fs_1.6.5           
  [79] mvtnorm_1.3-1       grid_4.4.0          rbibutils_2.3      
- [82] datawizard_0.13.0   colorspace_2.1-1    nlme_3.1-166       
- [85] patchwork_1.3.0     performance_0.12.3  Formula_1.2-5      
+ [82] datawizard_1.0.0    colorspace_2.1-1    nlme_3.1-166       
+ [85] patchwork_1.3.0     performance_0.13.0  Formula_1.2-5      
  [88] cli_3.6.3           fansi_1.0.6         viridisLite_0.4.2  
- [91] svglite_2.1.3       gtable_0.3.5        rstatix_0.7.2      
+ [91] svglite_2.1.3       gtable_0.3.6        rstatix_0.7.2      
  [94] sass_0.4.9          digest_0.6.37       pbkrtest_0.5.3     
  [97] ggrepel_0.9.6       farver_2.1.2        memoise_2.0.1      
 [100] htmltools_0.5.8.1   lifecycle_1.0.4     httr_1.4.7         
