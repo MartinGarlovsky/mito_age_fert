@@ -38,7 +38,7 @@ options(contrasts = c("contr.sum", "contr.poly"))
 
 #### Load data
 ```{r}
-bd_dat <- read.csv('data//wrangled/body_data.csv') %>% 
+bd_dat <- read.csv('data/wrangled/body_data.csv') %>% 
   mutate(mito_snp = as.factor(mito_snp),
          coevolved = if_else(mito == nuclear, "matched", "mismatched"))
 ```
@@ -76,7 +76,7 @@ performance::check_model(b1full)
 ### Results {.tabset}
 ```{r}
 anova(b1full, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
-  as_tibble() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/bodysize.csv") # save anova table for supp. tables
   kable(digits = 3, 
         caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
   kable_styling(full_width = FALSE)
@@ -95,13 +95,21 @@ bind_rows(emmeans(b1full, pairwise ~ sex, adjust = "tukey")$contrasts %>% as_tib
 
 #### Reaction norms
 ```{r}
+
 body2_emm <- emmeans(b1full, ~ mito * nuclear * sex)
 
 # reaction norms
 body_norms <- emmeans(body2_emm, ~ mito * nuclear * sex, type = 'response') %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  # geom_jitter(data = bd_dat %>% 
+  #               group_by(LINE, sex) %>% 
+  #               summarise(mn = mean(scaled_area)) %>% 
+  #               separate(LINE, into = c("mito", "nuclear", NA), sep = "(?<=.)", remove = FALSE),
+  #             aes(y = mn, colour = mito),
+  #             position = position_jitterdodge(dodge.width = .5, jitter.width = .1),
+  #             alpha = .5, size = 2) +
+  geom_point(size = 5, pch = 21, position = position_dodge(width = .5)) +
   labs(y = 'Scaled wing area (EMM)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
@@ -115,6 +123,7 @@ body_norms
 
 #### Raw data with means
 ```{r}
+
 body_size <- emmeans(body2_emm, ~ mito * nuclear * sex, type = 'response') %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_jitter(data = bd_dat,

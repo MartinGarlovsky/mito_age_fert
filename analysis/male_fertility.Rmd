@@ -63,7 +63,8 @@ sperm_vib_filt <- read.csv("data/wrangled/sperm_viability_wrangled.csv") %>%
 
 # sperm metabolism
 sperm_met <- read.csv("data/wrangled/sperm_met_wrangled.csv") %>% 
-  mutate(mito_snp = as.factor(mito_snp),
+  mutate(age = fct_relevel(age, c("young","old")),
+         mito_snp = as.factor(mito_snp),
          p.a2 = a2/100, # convert to percentage proportion
          coevolved = if_else(mito == nuclear, "matched", "mismatched")) 
 
@@ -115,8 +116,9 @@ hist(male_fert_filt$total_eggs, breaks = 50)
 male_fec_test <- lmerTest::lmer(total_eggs ~ mito * nuclear * age + (1|LINE:age), 
                                 data = male_fert_filt, REML = TRUE) 
 
-anova(male_fec_test, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
-  as_tibble() %>% 
+anova(male_fec_test, type = "III", ddf = "Kenward-Roger") %>% 
+  broom::tidy() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/male_fecundity.csv") %>% # save anova table for supp. tables
   kable(digits = 3, 
         caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
   kable_styling(full_width = FALSE)
@@ -150,8 +152,10 @@ bind_rows(pairs(fec_emm, simple = list("age", "mito", "nuclear"))$`simple contra
 male_fecundity_norm <- emmeans(male_fec_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = 'Partner fecundity (EMM)') +
+  labs(y = 'Partner fecundity (EMM ± 95% CI)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   facet_wrap(~ age) +
@@ -160,6 +164,7 @@ male_fecundity_norm <- emmeans(male_fec_test, ~ mito * nuclear * age) %>% as_tib
   NULL
 
 male_fecundity_norm
+
 ```
 
 #### >>>> Raw data
@@ -201,11 +206,9 @@ male_fecundity_raw
 male_fec_coevo <- lmerTest::lmer(total_eggs ~ coevolved * age + (1 + age|LINE), 
                                  data = male_fert_filt, REML = TRUE) 
 
-anova(male_fec_coevo, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
-  as_tibble() %>% 
-  kable(digits = 3, 
-        caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
-  kable_styling(full_width = FALSE)
+anova(male_fec_coevo, type = "III", ddf = "Kenward-Roger") %>% 
+  broom::tidy() %>% 
+  as_tibble()
 
 #summary(male_fec_coevo)
 
@@ -309,8 +312,9 @@ plot(simulationOutput)
 ### >>> Results {.tabset}
 ```{r}
 
-car::Anova(hatch2, type = "3") %>% broom::tidy() %>% 
-  as_tibble() %>% 
+car::Anova(hatch2, type = "3") %>% 
+  broom::tidy() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/male_fert_young.csv") %>% # save anova table for supp. tables
   kable(digits = 3, 
         caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
   kable_styling(full_width = FALSE)
@@ -335,7 +339,7 @@ hatchingsuccess_young_norm <- emmeans(hatch2, ~ mito * nuclear, type = 'response
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = '% Hatching success (EMM)') +
+  labs(y = '% Hatching success (EMM ± 95% CI)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   theme_bw() + 
@@ -449,8 +453,9 @@ performance::check_overdispersion(ster_md)
 #### >>>> Results {.tabset}
 ```{r}
 
-car::Anova(ster_md, type = "3") %>% broom::tidy() %>% 
-  as_tibble() %>% 
+car::Anova(ster_md, type = "3") %>% 
+  broom::tidy() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/male_fert_old.csv") %>% # save anova table for supp. tables
   kable(digits = 3, 
         caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
   kable_styling(full_width = FALSE)
@@ -472,7 +477,7 @@ hatchingsuccess_old_norm <- emmeans(ster_emm, ~ mito * nuclear, type = 'response
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = 'Proportion fertile (EMM)') +
+  labs(y = 'Proportion fertile (EMM ± 95% CI)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   theme_bw() + 
@@ -556,8 +561,10 @@ comb_fert <- bind_rows(
   mutate(age = fct_relevel(tolower(age), c("young", "old"))) %>% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
-  labs(y = 'Proportion fertile (EMM)') +
+  labs(y = 'Proportion fertile (EMM ± 95% CI)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
   facet_wrap(~age) +
@@ -685,7 +692,9 @@ plot(simulationOutput)
 
 ### >>>> 
 ```{r}
-car::Anova(viability_m1, type = "3") %>% broom::tidy() %>% 
+car::Anova(viability_m1, type = "3") %>% 
+  broom::tidy() %>% 
+  #write_csv("output/anova_tables/viability_t0.csv") %>% # save anova table for supp. tables
   as_tibble() %>% 
   kable(digits = 3, 
         caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
@@ -714,8 +723,8 @@ bind_rows(emmeans(viability_m1, pairwise ~ age | nuclear, adjust = "tukey")$cont
 sperm_vib_norm <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), 
-  #               width = .25, position = position_dodge(width = .65)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = 'Sperm viability (EMM)') +
   scale_colour_manual(values = met3) +
@@ -876,7 +885,14 @@ plot(simulationOutput)
 
 #### >>>> Results {.tabset}
 ```{r, fig.height=12}
-car::Anova(viability_m2, type = "3")
+
+car::Anova(viability_m2, type = "3") %>% 
+  broom::tidy() %>% 
+  #write_csv("output/anova_tables/viability_t30.csv") %>% # save anova table for supp. tables
+  as_tibble() %>% 
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
 
 #summary(viability_m2)
 
@@ -906,6 +922,8 @@ bind_rows(emmeans(viability_m2, pairwise ~ mito, adjust = "tukey")$contrasts %>%
 sperm_stress_norm <- emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = 'Sperm viability (EMM)') +
   scale_colour_manual(values = met3) +
@@ -984,9 +1002,15 @@ car::Anova(viability_m2_snp, type = "3")
 sperm_diffs_norm <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = prob, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 23, position = position_dodge(width = .5)) +
+  # after stress
   geom_line(data = emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble(),
             aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(data = emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble(),
+  #               aes(ymin = asymp.LCL, ymax = asymp.UCL),
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(data = emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble(),
              aes(fill = mito), size = 3, pch = 22, position = position_dodge(width = .5)) + 
   labs(y = 'Sperm viability (EMM)') +
@@ -999,12 +1023,29 @@ sperm_diffs_norm <- emmeans(viability_m1, ~ mito * nuclear * age, type = 'respon
 
 sperm_diffs_norm
 
+# bind_rows(
+#   emmeans(viability_m1, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% mutate(stage = "t0"),
+#   emmeans(viability_m2, ~ mito * nuclear * age, type = 'response') %>% as_tibble() %>% mutate(stage = "t30")) %>%
+#   ggplot(aes(x = nuclear, y = prob, fill = mito, shape = stage)) +
+#   geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), position = position_dodge(width = .5), width = .5) +
+#   geom_line(aes(group = interaction(mito, stage), colour = mito), position = position_dodge(width = .5)) +
+#   geom_point(size = 3, position = position_dodge(width = .5)) +
+#   labs(y = 'No. progeny (EMM)') +
+#   scale_colour_manual(values = met3) +
+#   scale_fill_manual(values = met3) +
+#   scale_shape_manual(values = c(23, 22)) + 
+#   facet_wrap(~ age) +
+#   theme_bw() + 
+#   theme() + 
+#   NULL
+
 ```
 
 
 ## >> Sperm quality {.tabset}
 For the analysis of sperm quality we calculated the mean difference in sperm viability between treated and control for each male. In the plots below lines connect the mean measurements for each male, showing the overall average decline in viability after stress treatment.
 ```{r}
+
 # calculate difference in viability between treatment/control for each male
 viability_diff <- sperm_vib_filt %>%
   group_by(treatment, mito, mito_snp, nuclear, coevolved, LINE, age, male_ID, block, days) %>% 
@@ -1012,6 +1053,7 @@ viability_diff <- sperm_vib_filt %>%
   pivot_wider(names_from = treatment, 
               values_from = mn_vib) %>% 
   mutate(diff = t - c)
+
 ```
 
 ### >>> Young males
@@ -1060,8 +1102,10 @@ plot(simulationOutput)
 
 ### >>> Results {.tabset}
 ```{r}
-anova(vib_diff_test, type = "III", ddf = "Kenward-Roger") %>% broom::tidy() %>% 
+anova(vib_diff_test, type = "III", ddf = "Kenward-Roger") %>% 
+  broom::tidy() %>% 
   as_tibble() %>% 
+  #write_csv("output/anova_tables/sperm_quality.csv") %>% # save anova table for supp. tables
   kable(digits = 3, 
         caption = 'Type III Analysis of Variance Table with Kenward-Roger`s method') %>% 
   kable_styling(full_width = FALSE)
@@ -1086,10 +1130,13 @@ emtrends(vib_diff_test, ~ days, var = "days") %>% broom::tidy() %>%
 
 #### >>>> Reaction norms
 ```{r}
+
 sperm_qual_norm <- emmeans(vib_diff_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
-  geom_point(size = 3, pch = 23, position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL),
+  #               width = .25, position = position_dodge(width = .5)) +
+  geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = 'Sperm viability (EMM)') +
   scale_colour_manual(values = met3) +
   scale_fill_manual(values = met3) +
@@ -1128,6 +1175,7 @@ We measured the metabolic rate of sperm dissected from seminal vesicles using NA
 Looking at the data there is a clear outlier in old males where `a2` > 50. We will analyse the data including and excluding this outlier. 
 
 ```{r}
+
 sperm_met %>% 
   group_by(mito, nuclear, age) %>% 
   summarise(mn = mean(a2),
@@ -1147,6 +1195,7 @@ sperm_met %>%
   theme_bw() + 
   theme() + 
   NULL
+
 ```
 
 ## >> Analysis {.tabset}
@@ -1185,7 +1234,9 @@ plot(simulationOutput)
 
 ## >> Results {.tabset}
 ```{r}
-anova(met_mod_test, type = "III", ddf = "Kenward-Roger")
+anova(met_mod_test, type = "III", ddf = "Kenward-Roger") %>% 
+  broom::tidy() %>% 
+  as_tibble() #%>% write_csv("output/anova_tables/sperm_metabolism.csv") %>% # save anova table for supp. tables
 
 met_emm <- emmeans(met_mod_test, ~ mito * nuclear * age)
 
@@ -1194,9 +1245,12 @@ emmeans(met_mod_test, pairwise ~ age, adjust = "tukey")
 
 ### >>> Reaction norms
 ```{r}
+
 sperm_met_norm <- emmeans(met_mod_test, ~ mito * nuclear * age) %>% as_tibble() %>% 
   ggplot(aes(x = nuclear, y = emmean, fill = mito)) +
   geom_line(aes(group = mito, colour = mito), position = position_dodge(width = .5)) +
+  # geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+  #               width = .25, position = position_dodge(width = .5)) +
   geom_point(size = 3, pch = 21, position = position_dodge(width = .5)) +
   labs(y = 'Sperm metabolic rate, a2 (EMM)') +
   scale_colour_manual(values = met3) +
@@ -1207,6 +1261,7 @@ sperm_met_norm <- emmeans(met_mod_test, ~ mito * nuclear * age) %>% as_tibble() 
   NULL
 
 sperm_met_norm
+
 ```
 
 ### >>> Raw data and means
@@ -1326,7 +1381,12 @@ plot(simulationOutput)
 
 ### >>> Results
 ```{r}
-car::Anova(p1.mod1, type = "3")
+car::Anova(p1.mod1, type = "3") %>% 
+  broom::tidy() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/male_P1.csv") %>% # save anova table for supp. tables
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
 
 # posthoc tests
 bind_rows(emmeans(p1.mod1, pairwise ~ nuclear, adjust = "tukey")$contrasts %>% broom::tidy() %>%
@@ -1450,7 +1510,12 @@ plot(simulationOutput)
 
 
 ```{r}
-car::Anova(p2.mod1, type = "3")
+car::Anova(p2.mod1, type = "3") %>% 
+  broom::tidy() %>% 
+  as_tibble() %>% #write_csv("output/anova_tables/male_P2.csv") %>% # save anova table for supp. tables
+  kable(digits = 3, 
+        caption = 'Analysis of Deviance Table (Type III Wald chisquare tests)') %>% 
+  kable_styling(full_width = FALSE)
 
 
 # posthoc tests
@@ -1524,6 +1589,7 @@ car::Anova(p2.snp, type = "3")
 
 ##### Combined plot
 ```{r}
+
 comb_spermcomp <- bind_rows(
   emmeans(p1.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(trt = "P1"),
   emmeans(p2.mod1, ~ mito * nuclear, type = 'response') %>% as_tibble() %>% mutate(trt = "P2")) %>% 
@@ -1547,6 +1613,7 @@ comb_spermcomp
 
 Finally, we tested whether there was a correlation between P1 and P2 using the model estimated marginal means for each genotype. We can visualise this either as the ranked means (1-9) or as a scatterplot.
 ```{r}
+
 pdat <- bind_rows(emmeans(p1.mod1, ~ mito * nuclear) %>% as_tibble() %>% mutate(met = "P1"),
                   emmeans(p2.mod1, ~ mito * nuclear) %>% as_tibble() %>% mutate(met = "P2")) %>% 
   mutate(mt = rep(1:9, 2))
